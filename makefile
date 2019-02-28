@@ -1,4 +1,5 @@
 CC = gcc
+CFLAGS = -I.
 
-main.exe: main.c
-	$(CC) -Wall main.c  -lncurses
+scrabble: main.c tile.c
+	$(CC) -Wall main.c tile.c -lncurses
