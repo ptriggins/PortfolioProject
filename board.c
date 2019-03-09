@@ -3,90 +3,67 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 // Sets the board size and initializes its tiles
-void initBoard(int size){
+void initBoard(BOARD* self, int rows, int cols){
 
-  self->size = size;
+  self->rows = rows;
+  self->cols = cols;
 
-  // Calculates the midpoint of the scrabble board
-  int mid =  (size / 2) + 1
+  int topY = -rows / 2;
+  int topX = -cols / 2;
 
-  for(int i = 0; i < size; i++){
-    for(int j = 0; j < size; j++){
+  // Initializes each tile on the scrabble board
+  for(int i = topY; i < topY + rows; i++){
+    for(int j = topX; j < topX + cols; j++){
+
+      // Calculates the actual coordinates of the tile on the board
+      int x = i + rows / 2;
+      int y = j + rows / 2;
 
       // Initializes the starting tile
-      if(i == mid  && j == mid)
-        self->tiles[i][j] = createTile("ST", j, i);
-
+      if(i == 0 && j == 0)
+        self->tiles[x][y] = createTile("ST", y * 3, x * 3);
+      // Initializes triple word tiles
+      else if(i % 7 == 0 && j % 7 == 0)
+        self->tiles[x][y] = createTile("TW", y * 3, x * 3);
+      // Initializes double word tiles
+      else if(abs(i) > 2 && abs(j) > 2 && abs(i) == abs(j))
+        self->tiles[x][y] = createTile("DW", y * 3, x * 3);
       // Initializes tripple letter tiles
-      if()
+      else if(abs(i) % 4 == 2 && abs(j) % 4 == 2)
+        self->tiles[x][y] = createTile("TL", y * 3, x * 3);
+      // Initializes double letter tiles
+      else if((abs(i) % 7 == 0 && abs(j) % 4 == 0) || (abs(i) % 4 == 0 && abs(j) % 7 == 0))
+        self->tiles[x][y] = createTile("DL", y * 3, x * 3);
+      else if((abs(i) == 1 && abs(j) % 4 == 1) || (abs(j) == 1 && abs(i) % 4 == 1))
+        self->tiles[x][y] = createTile("DL", y * 3, x * 3);
+      else
+        self->tiles[x][y] = createTile("  ", y * 3, x * 3);
 
     }
   }
-
 
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 // Allocates memory for a game board of a given size
-BOARD* createBoard(BOARD* self, FILE* initFile){
+BOARD* createBoard(int rows, int cols){
 
   BOARD* newBoard = (BOARD*) malloc(sizeof(BOARD));
+  initBoard(newBoard, rows, cols);
+  return newBoard;
 
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void drawScrabble(WINDOW* win, int startY, int startX){
+void drawBoard(BOARD* self){
 
-  for(int i = 0; i < 46; i++){
-    for(int j = 0; j < 76; j++){
-
-      // Draws the top edge of the grid
-      if(i == 0){
-
-        if(j == 0)
-          mvwaddch(win, startY, startX, ACS_ULCORNER);
-        else if(j == 75)
-          mvwaddch(win, startY, startX + j, ACS_URCORNER);
-        else if(j % 5 == 0)
-          mvwaddch(win, startY, startX + j, ACS_TTEE);
-        else
-          mvwaddch(win, startY, startX + j, ACS_HLINE);
-
-      }
-      // Draws the bottom edge of the grid
-      else if(i == 45){
-
-        if(j == 0)
-          mvwaddch(win, startY + i, startX, ACS_LLCORNER);
-        else if(j == 75)
-          mvwaddch(win, startY + i, startX + j, ACS_LRCORNER);
-        else if(j % 5 == 0)
-          mvwaddch(win, startY + i, startX + j, ACS_BTEE);
-        else
-          mvwaddch(win, startY + i, startX + j, ACS_HLINE);
-
-      }
-      // Draws intermediate rows of grid
-      else if(i % 3 == 0){
-
-        if(j == 0)
-          mvwaddch(win, startY + i, startX, ACS_LTEE);
-        else if(j == 75)
-          mvwaddch(win, startY + i, startX + j, ACS_RTEE);
-        else if(j % 5 == 0)
-          mvwaddch(win, startY + i, startX + j, ACS_PLUS);
-        else
-          mvwaddch(win, startY + i, startX + j, ACS_HLINE);
-
-      }
-      // Draws connecting vertical lines
-      else if( j % 5 == 0)
-          mvwaddch(win, startY + i, startX + j, ACS_VLINE);
-
+  for(int i = 0; i < self->rows; i++){
+    for(int j = 0; j < self->cols; j++){
+      drawTile(self->tiles[i][j]);
     }
   }
-  wrefresh(win);
+  //drawTile(self->tiles[8][8]);
 
 }

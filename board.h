@@ -7,14 +7,14 @@
 typedef struct BOARD{
 
   // Size and location of the gmae board
-  int size;
+  int rows, cols;
   int startX;
   int startY;
 
   WINDOW* win;
-  TILE tiles[20][20];
+  TILE* tiles[20][20];
 
 }BOARD;
 
-BOARD* createBoard(int size);
-void drawBoard(WINDOW* win, int startY, int startX);
+BOARD* createBoard(int rows, int cols);
+void drawBoard(BOARD* self);

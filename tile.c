@@ -1,18 +1,17 @@
 #include "tile.h"
 
-///////////////////////////////////////////////////////////////////////////////
-
 // Tile constructor: Sets the tile's attributes
 void initTile(TILE* self, char type[2], int xLetter, int xWord, int y, int x){
 
-  self->type = type;
-  self->currentLetter = '';
+  strcpy(self->type, type);
+  self->currentLetter = ' ';
 
   self->letterMultiplier = xLetter;
   self->wordMultiplier = xWord;
 
-  self->yCoord = y;
-  self->xCoord = x;
+  self->startX = y;
+  self->startY = x;
+  self->win = newwin(TILE_H, TILE_W, y, x);
 
 }
 
@@ -23,17 +22,17 @@ TILE* createTile(char tileType[2], int y, int x){
 
   TILE* newTile = (TILE*) malloc(sizeof(TILE));
 
-  if(tileType == "NA")
+  if(strcmp(tileType, "  ") == 0)
     initTile(newTile, tileType, 0, 0, y, x);
-  else if(tileType = "ST")
+  else if(strcmp(tileType, "ST") == 0)
     initTile(newTile, tileType, 0, 2, y, x);
-  else if(tileType = "DL")
+  else if(strcmp(tileType, "DL") == 0)
     initTile(newTile, tileType, 2, 0, y, x);
-  else if(tileType = "TL")
+  else if(strcmp(tileType, "TL") == 0)
     initTile(newTile, tileType, 3, 0, y, x);
-  else if(tileType = "DW")
+  else if(strcmp(tileType, "DW") == 0)
     initTile(newTile, tileType, 0, 2, y, x);
-  else if(tileType = "TW")
+  else if(strcmp(tileType, "TW") == 0)
     initTile(newTile, tileType, 0, 3, y, x);
 
   return newTile;
@@ -42,9 +41,10 @@ TILE* createTile(char tileType[2], int y, int x){
 
 ///////////////////////////////////////////////////////////////////////////////
 
-// draws a tile to the game board
-WINDOW* drawTile(TILE* self, WINDOW* board){
+// Draws a tile to the game board
+void drawTile(TILE* self){
 
-
+  wprintw(self->win, self->type);
+  wrefresh(self->win);
 
 }

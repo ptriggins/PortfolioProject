@@ -10,6 +10,11 @@ int main(void){
   initscr();
   cbreak();
 
+  refresh();
+
+  BOARD* gameBoard = createBoard(15, 15);
+  drawBoard(gameBoard);
+
   // Draws the parent window
   refresh();
 
