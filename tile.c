@@ -58,9 +58,9 @@ void drawTile(TILE* self){
   wattron(self->win, COLOR_PAIR(self->color));
 
   // Draws the tile
-  wprintw(self->win, self->type), wprintw(self->win, " ");
-  mvwprintw(self->win, 1, 0, "   ");
-  mvwprintw(self->win, 2, 0, "   ");
+  wprintw(self->win,"%s  ", self->type);
+  mvwprintw(self->win, 1, 0, "     ");
+  mvwprintw(self->win, 2, 0, "     ");
 
   wrefresh(self->win);
 

@@ -22,23 +22,23 @@ void initBoard(BOARD* self, int rows, int cols){
 
       // Initializes the starting tile
       if(i == 0 && j == 0)
-        self->tiles[x][y] = createTile("ST", y * 3, x * 3);
+        self->tiles[x][y] = createTile("ST", y * TILE_H, x * TILE_W);
       // Initializes triple word tiles
       else if(i % 7 == 0 && j % 7 == 0)
-        self->tiles[x][y] = createTile("TW", y * 3, x * 3);
+        self->tiles[x][y] = createTile("TW", y * TILE_H, x * TILE_W);
       // Initializes double word tiles
       else if(abs(i) > 2 && abs(j) > 2 && abs(i) == abs(j))
-        self->tiles[x][y] = createTile("DW", y * 3, x * 3);
+        self->tiles[x][y] = createTile("DW", y * TILE_H, x * TILE_W);
       // Initializes tripple letter tiles
       else if(abs(i) % 4 == 2 && abs(j) % 4 == 2)
-        self->tiles[x][y] = createTile("TL", y * 3, x * 3);
+        self->tiles[x][y] = createTile("TL", y * TILE_H, x * TILE_W);
       // Initializes double letter tiles
       else if((abs(i) % 7 == 0 && abs(j) % 4 == 0) || (abs(i) % 4 == 0 && abs(j) % 7 == 0))
-        self->tiles[x][y] = createTile("DL", y * 3, x * 3);
+        self->tiles[x][y] = createTile("DL", y * TILE_H, x * TILE_W);
       else if((abs(i) == 1 && abs(j) % 4 == 1) || (abs(j) == 1 && abs(i) % 4 == 1))
-        self->tiles[x][y] = createTile("DL", y * 3, x * 3);
+        self->tiles[x][y] = createTile("DL", y * TILE_H, x * TILE_W);
       else
-        self->tiles[x][y] = createTile("  ", y * 3, x * 3);
+        self->tiles[x][y] = createTile("  ", y * TILE_H, x * TILE_W);
 
     }
   }

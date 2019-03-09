@@ -4,7 +4,7 @@
 #include <ncurses.h>
 
 // The size of the tile to be drawn in the terminal
-#define TILE_W 3
+#define TILE_W 5
 #define TILE_H 3
 
 /////////////////////////////////////////////////////////////////////////
