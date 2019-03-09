@@ -8,6 +8,7 @@ void initBoard(BOARD* self, int rows, int cols){
   self->rows = rows;
   self->cols = cols;
 
+  // Sets loop variables relative to the start tile
   int topY = -rows / 2;
   int topX = -cols / 2;
 

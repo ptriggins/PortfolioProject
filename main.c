@@ -13,6 +13,8 @@ int main(void){
   refresh();
 
   BOARD* gameBoard = createBoard(15, 15);
+
+  start_color();
   drawBoard(gameBoard);
 
   // Draws the parent window

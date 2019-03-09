@@ -22,6 +22,7 @@ typedef struct TILE{
   // Location of the tile on the board and window the tile will be drawn in
   int startX;
   int startY;
+  int color;
   WINDOW* win;
 
 }TILE;
