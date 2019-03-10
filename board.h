@@ -4,17 +4,20 @@
 #include <ncurses.h>
 #include "tile.h"
 
+/////////////////////////////////////////////////////////////////////////////
+
 typedef struct BOARD{
 
-  // Size and location of the gmae board
-  int rows, cols;
-  int startX;
-  int startY;
+  int rows;   // # ROWS IN THE GAMEBOARD
+  int cols;   // # COLS IN THE GAMEBOARD
+  int x;      // X COORDINATE OF THE TILE'S TOP RIGHT CORNER
+  int y;      // Y COORDINATE OF THE TILE'S TOP RIGHT CORNER
 
-  WINDOW* win;
-  TILE* tiles[20][20];
+  TILE* tiles[20][20];    // ARRAY OF TILES THAT MAKEUP THE GAMEBOARD
 
 }BOARD;
+
+/////////////////////////////////////////////////////////////////////////////
 
 BOARD* createBoard(int rows, int cols);
 void drawBoard(BOARD* self);

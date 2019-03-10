@@ -3,31 +3,29 @@
 #include <string.h>
 #include <ncurses.h>
 
-// The size of the tile to be drawn in the terminal
+// DIMENSIONS OF ANY GIVEN TILE
 #define TILE_W 5
 #define TILE_H 3
 
-/////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 
 typedef struct TILE{
 
-  // The type of tile type and the letter the tile currently stores
-  char type[2];
-  char currentLetter;
+  char type[2];         // THE TYPE OF THE TILE
+  char currentLetter;   // THE LETTER, IF ANY, CURRENTLY IN PLAY ON THE TILE
 
-  // Multipliers used in determining how a player's word will be scored
-  int letterMultiplier;
-  int wordMultiplier;
+  int letterMulti;      // BONUS MULTIPLIER FOR LETTERS PLAYED ON THE TILE
+  int wordMulti;       // BONUS MULTIPLIER FOR WORDS PLAYED ON THE TILE
 
-  // Location of the tile on the board and window the tile will be drawn in
-  int startX;
-  int startY;
-  int color;
-  WINDOW* win;
+  int x;                // X COORDINATE OF THE TILE'S TOP CORNER
+  int y;                // Y COORDINATE OF THE TILE'S TOP CORNER
+  int color;            // INTEGER REPRESENTING THE BACKGROUND/FOREGROUND COLOR PAIR
+
+  WINDOW* win;          // THE WINDOW THE TILE WILL BE DRAWN IN
 
 }TILE;
 
-/////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 
 TILE* createTile(char type[2], int y, int x);
 void drawTile(TILE* self);

@@ -1,22 +1,25 @@
 #include "tile.h"
 
+/////////////////////////////////////////////////////////////////////////////
+
+
 // Tile constructor: Sets the tile's attributes
 void initTile(TILE* self, char type[2], int xLetter, int xWord, int y, int x, int color){
 
   strcpy(self->type, type);
   self->currentLetter = ' ';
 
-  self->letterMultiplier = xLetter;
-  self->wordMultiplier = xWord;
+  self->letterMulti = xLetter;
+  self->wordMulti = xWord;
 
-  self->startX = y;
-  self->startY = x;
+  self->y = y;
+  self->x = x;
   self->color = color;
   self->win = newwin(TILE_H, TILE_W, y, x);
 
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 
 // Allocates memory for a tile and calls the constuctor based on its type
 TILE* createTile(char tileType[2], int y, int x){
@@ -40,7 +43,7 @@ TILE* createTile(char tileType[2], int y, int x){
 
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 
 // Draws a tile to the game board
 void drawTile(TILE* self){
