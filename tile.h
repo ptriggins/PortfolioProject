@@ -20,6 +20,7 @@ typedef struct TILE{
   int x;                // X COORDINATE OF THE TILE'S TOP CORNER
   int y;                // Y COORDINATE OF THE TILE'S TOP CORNER
   int color;            // INTEGER REPRESENTING THE BACKGROUND/FOREGROUND COLOR PAIR
+  int selected;         // 0 IF TILE IS SELECTED BY THE USER, 1 IF NOT
 
   WINDOW* win;          // THE WINDOW THE TILE WILL BE DRAWN IN
 

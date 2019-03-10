@@ -21,3 +21,4 @@ typedef struct BOARD{
 
 BOARD* createBoard(int rows, int cols);
 void drawBoard(BOARD* self);
+void switchTile(BOARD* self, int ch);
