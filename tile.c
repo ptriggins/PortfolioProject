@@ -4,10 +4,10 @@
 
 
 // Tile constructor: Sets the tile's attributes
-void initTile(TILE* self, char type[2], int xLetter, int xWord, int y, int x, int color, int s){
+void initTile(TILE* self, char type[2], char letter, int xLetter, int xWord, int y, int x, int color, int s){
 
   strcpy(self->type, type);
-  self->currentLetter = ' ';
+  self->currentLetter = letter;
 
   self->letterMulti = xLetter;
   self->wordMulti = xWord;
@@ -29,18 +29,26 @@ TILE* createTile(char tileType[2], int y, int x){
   TILE* newTile = (TILE*) malloc(sizeof(TILE));
 
   if(strcmp(tileType, "  ") == 0)
-    initTile(newTile, tileType, 0, 0, y, x, 1, 0);
+    initTile(newTile, tileType, ' ', 0, 0, y, x, 1, 0);
   else if(strcmp(tileType, "ST") == 0)
-    initTile(newTile, tileType, 0, 2, y, x, 2, 1);
+    initTile(newTile, tileType, ' ', 0, 2, y, x, 2, 1);
   else if(strcmp(tileType, "DL") == 0)
-    initTile(newTile, tileType, 2, 0, y, x, 3, 0);
+    initTile(newTile, tileType, ' ', 2, 0, y, x, 3, 0);
   else if(strcmp(tileType, "TL") == 0)
-    initTile(newTile, tileType, 3, 0, y, x, 4, 0);
+    initTile(newTile, tileType, ' ', 3, 0, y, x, 4, 0);
   else if(strcmp(tileType, "DW") == 0)
-    initTile(newTile, tileType, 0, 2, y, x, 5, 0);
+    initTile(newTile, tileType, ' ', 0, 2, y, x, 5, 0);
   else if(strcmp(tileType, "TW") == 0)
-    initTile(newTile, tileType, 0, 3, y, x, 6, 0);
+    initTile(newTile, tileType, ' ', 0, 3, y, x, 6, 0);
 
+  return newTile;
+
+}
+
+TILE* CreateTile(char letter, int score, int y, int x){
+
+  TILE* newTile = (TILE*) malloc(sizeof(TILE));
+  initTile(newTile, "  ", letter, score, 0, y, x, 7, 0);
   return newTile;
 
 }

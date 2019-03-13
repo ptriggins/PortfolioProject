@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <ncurses.h>
 #include "board.h"
+#include "deck.h"
 
 void drawScrabble(WINDOW* win, int startY, int startX);
 
@@ -17,6 +18,9 @@ int main(void){
   // DECLARES A GAMEBOARD OF GIVEN SIZE
   BOARD* gameboard = createBoard(15, 15);
   int currX = 7, currY = 7;
+
+  // DECLARES A DECK OF TILES THAT CAN BE PLAYED
+  DECK* deck = CreateDeck();
 
   // DRAWS THE PARENT SCREEN
   refresh();
