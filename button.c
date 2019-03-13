@@ -63,12 +63,7 @@ void erase_button(BUTTON* self){
   init_pair(1, COLOR_BLACK, COLOR_BLACK);
   wattron(self->win, COLOR_PAIR(1));
 
-  // DRAWS OVER THE PREVIOUSLY DISPLAYED BUTTON
-  for(int i = 0; i < BUTTON_H; i++){
-    for(int j = 0; j < BUTTON_W; j++){
-      mvwaddch(self->win, i, j, ' ');
-    }
-  }
+  werase(self->win);
 
   // REFRESHES THE BUTTON
   wrefresh(self->win);

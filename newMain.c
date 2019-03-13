@@ -105,7 +105,7 @@ int run_start_menu(){
       else if (currentButton == 1){
 
         for(int i = 0; i < 3; i++){
-          erase_button(menu[i]);
+          werase(menu[i]->win);
         }
         return 1;
 
