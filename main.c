@@ -3,8 +3,6 @@
 #include "board.h"
 #include "deck.h"
 
-void drawScrabble(WINDOW* win, int startY, int startX);
-
 int main(void){
 
   // INITIALIZES NCURSES

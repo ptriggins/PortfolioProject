@@ -24,3 +24,4 @@ typedef struct BUTTON{
 // FUNCTIONS RELATED TO THE BUTTON OBJECT
 BUTTON* create_button(char text[20], int highlighted, int y, int x);
 void draw_button(BUTTON* self);
+void erase_button(BUTTON* self);

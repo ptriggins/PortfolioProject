@@ -28,5 +28,5 @@ typedef struct TILE{
 
 /////////////////////////////////////////////////////////////////////////////
 
-TILE* createTile(char type[2], int y, int x);
-void drawTile(TILE* self);
+TILE* create_tile(char type[2], int y, int x);
+void draw_tile(TILE* self);

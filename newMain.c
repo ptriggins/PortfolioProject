@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <ncurses.h>
 #include "button.h"
+#include "board.h"
 
 /////////////////////////////////////////////////////////////////////////////
 
 void init_ncurses();
-void run_start_menu();
+int run_start_menu();
+void run_game_loop();
 
 int main(void){
 
@@ -16,7 +18,15 @@ int main(void){
 
   refresh();
 
-  run_start_menu();
+  // RUNS THE START MENU
+  int cont = run_start_menu();
+
+  // RUNS THE GAME LOOP IF APPRPRIATE BUTTONS WERE SELECTED IN THE START MENU
+  if(cont == 1){
+    printf("Test");
+    run_game_loop();
+  }
+
 
   endwin();
 
@@ -37,7 +47,7 @@ void init_ncurses(){
 /////////////////////////////////////////////////////////////////////////////
 
 // DRAWING AND EVENT HANDLING FOR THE START MENU
-void run_start_menu(){
+int run_start_menu(){
 
   // GETS TOP X AND Y COORDINATES FOR THE MENU RELATIVE TO THE CENTER
   int startY = ((LINES - BUTTON_H) / 2) - BUTTON_H;
@@ -64,22 +74,101 @@ void run_start_menu(){
     int ch = getch();
 
     // QUITS THE PROGRAM IF THE USER PRESSES F1
-    if(ch == 265) {break;}
+    if(ch == 265) {return 0;}
 
+    // CHANGES BUTTON SELECTED WHEN USER PRESSES UP KEY
     if(ch == KEY_UP && currentButton > 0){
       menu[currentButton]->highlighted = 0;
       menu[currentButton - 1]->highlighted = 1;
       currentButton--;
     }
+    // CHANGES BUTTON SELECTED WHEN USER PRESSES DOWN KEY
     else if(ch == KEY_DOWN && currentButton < 2){
       menu[currentButton]->highlighted = 0;
       menu[currentButton + 1]->highlighted = 1;
       currentButton++;
     }
+    // PERFORMS APPRPRIATE ACTION WHEN USER PRESSES ENTER
+    else if(ch == 10){
 
+      // ERASES THE MENU AND SIGNALS TO MOVE ON TO THE GAME LOOP
+      if(currentButton == 0){
+        for(int i = 0; i < 3; i++){
+          erase_button(menu[i]);
+        }
+        return 1;
+      }
+      // ERASES THE MENU AND SIGNALS TO MOVE ON TO THE GAME LOOP
+      else if (currentButton == 1){
+
+        for(int i = 0; i < 3; i++){
+          erase_button(menu[i]);
+        }
+        return 1;
+        
+      }
+      // SIGNALS TO QUIT THE PROGRAM
+      else
+        return 0;
+
+    }
+
+    // UPDATES THE MENU
     for(int i = 0; i < 3; i++){
       draw_button(menu[i]);
     }
+
+  }
+
+}
+
+/////////////////////////////////////////////////////////////////////////////
+
+void run_game_loop(){
+
+  // DECLARES A GAMEBOARD OF A GIVEN SIZE
+  BOARD* gameboard = create_board(15, 15);
+
+  // TRACKS THE CURRENT TILE SELECTED IN THE GAMEBOARD
+  int currentX = 7,  currentY = 7;
+
+  // DRAWS THE GAMEBOARD TO THE PARENT SCREEN
+  draw_board(gameboard);
+
+  // HANDLES USER INPUT
+  while(1){
+
+    // GETS A KEYPRESS FROM THE USER
+    int ch = getch();
+
+    // ENDS THE PROGRAM IF THE USER PRESSES F1
+    if(ch == 265) {break;}
+
+    // SWITCHES SELECTED TILE IN EVENT OF UP KEY PRESS
+    if(ch == KEY_UP && currentY > 0){
+      gameboard->tiles[currentX][currentY]->selected = 0;
+      gameboard->tiles[currentX][currentY - 1]->selected = 1;
+      currentY -= 1;
+    }
+    // SWITCHES SELECTED TILE IN EVENT OF DOWN KEY PRESS
+    else if(ch == KEY_DOWN && currentY < 14){
+      gameboard->tiles[currentX][currentY]->selected = 0;
+      gameboard->tiles[currentX][currentY + 1]->selected = 1;
+      currentY += 1;
+    }
+    // SWITCHES SELECTED TILE IN EVENT OF LEFT KEY PRESS
+    else if(ch == KEY_LEFT && currentX > 0){
+      gameboard->tiles[currentX][currentY]->selected = 0;
+      gameboard->tiles[currentX - 1][currentY]->selected = 1;
+      currentX -= 1;
+    }
+    // SWITCHES SELECTED TILE IN EVENT OF RIGHT KEY PRESS
+    if(ch == KEY_RIGHT && currentX < 14){
+      gameboard->tiles[currentX][currentY]->selected = 0;
+      gameboard->tiles[currentX + 1][currentY]->selected = 1;
+      currentX += 1;
+    }
+    draw_board(gameboard);
 
   }
 

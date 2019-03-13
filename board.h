@@ -19,6 +19,5 @@ typedef struct BOARD{
 
 /////////////////////////////////////////////////////////////////////////////
 
-BOARD* createBoard(int rows, int cols);
-void drawBoard(BOARD* self);
-void switchTile(BOARD* self, int ch);
+BOARD* create_board(int rows, int cols);
+void draw_board(BOARD* self);
