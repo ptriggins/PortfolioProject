@@ -11,7 +11,7 @@ int main(void){
   initscr();
   keypad(stdscr, TRUE);
   clear();
-  //noecho();
+  noecho();
   cbreak();
   start_color();
 
