@@ -28,8 +28,6 @@ BUTTON* create_button(char text[20], int highlighted, int y, int x){
 
 void draw_button(BUTTON* self){
 
-  printf("Test");
-
   // INITIALIZES THE POSSIBLE COLORS A BUTTON CAN TAKE
   init_pair(1, COLOR_BLACK, COLOR_YELLOW);
   init_pair(2, COLOR_BLACK, COLOR_GREEN);

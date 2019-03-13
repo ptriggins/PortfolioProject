@@ -18,8 +18,6 @@ int main(void){
 
   run_start_menu();
 
-  getch();
-
   endwin();
 
 }
@@ -38,6 +36,7 @@ void init_ncurses(){
 
 /////////////////////////////////////////////////////////////////////////////
 
+// DRAWING AND EVENT HANDLING FOR THE START MENU
 void run_start_menu(){
 
   // GETS TOP X AND Y COORDINATES FOR THE MENU RELATIVE TO THE CENTER
@@ -52,8 +51,36 @@ void run_start_menu(){
   // DECLARES A MENU REPRESENTED BY AN ARRAY OF BUTTONS
   BUTTON* menu[3] = {onePlayerGame, twoPlayerGame, quit};
 
+  // TRACKS THE BUTTON THAT IS CURRENTLY SELECTED IN THE MENU
+  int currentButton = 0;
+
   for(int i = 0; i < 3; i++){
     draw_button(menu[i]);
+  }
+
+  while(1){
+
+    // GETS A KEYPRESS FROM THE USER
+    int ch = getch();
+
+    // QUITS THE PROGRAM IF THE USER PRESSES F1
+    if(ch == 265) {break;}
+
+    if(ch == KEY_UP && currentButton > 0){
+      menu[currentButton]->highlighted = 0;
+      menu[currentButton - 1]->highlighted = 1;
+      currentButton--;
+    }
+    else if(ch == KEY_DOWN && currentButton < 2){
+      menu[currentButton]->highlighted = 0;
+      menu[currentButton + 1]->highlighted = 1;
+      currentButton++;
+    }
+
+    for(int i = 0; i < 3; i++){
+      draw_button(menu[i]);
+    }
+
   }
 
 }
