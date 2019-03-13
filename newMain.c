@@ -3,6 +3,9 @@
 #include "button.h"
 #include "board.h"
 
+#define BOARD_ROWS 15
+#define BOARD_COLS 15
+
 /////////////////////////////////////////////////////////////////////////////
 
 void init_ncurses();
@@ -105,7 +108,7 @@ int run_start_menu(){
           erase_button(menu[i]);
         }
         return 1;
-        
+
       }
       // SIGNALS TO QUIT THE PROGRAM
       else
@@ -126,8 +129,12 @@ int run_start_menu(){
 
 void run_game_loop(){
 
-  // DECLARES A GAMEBOARD OF A GIVEN SIZE
-  BOARD* gameboard = create_board(15, 15);
+  // FINDS COORDINATES OF A CENTERED BOARD OF A GIVEN SIZE
+  int boardY = (LINES / 2) - (BOARD_ROWS / 2) * TILE_H;
+  int boardX = (COLS / 2) - (BOARD_COLS / 2) * TILE_W;
+
+  // DECLARES A GAMEBOARD OF A GIVEN SIZE AND LOCATION
+  BOARD* gameboard = create_board(15, 15, boardY, boardX);
 
   // TRACKS THE CURRENT TILE SELECTED IN THE GAMEBOARD
   int currentX = 7,  currentY = 7;
@@ -163,7 +170,7 @@ void run_game_loop(){
       currentX -= 1;
     }
     // SWITCHES SELECTED TILE IN EVENT OF RIGHT KEY PRESS
-    if(ch == KEY_RIGHT && currentX < 14){
+    else if(ch == KEY_RIGHT && currentX < 14){
       gameboard->tiles[currentX][currentY]->selected = 0;
       gameboard->tiles[currentX + 1][currentY]->selected = 1;
       currentX += 1;

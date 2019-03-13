@@ -19,5 +19,5 @@ typedef struct BOARD{
 
 /////////////////////////////////////////////////////////////////////////////
 
-BOARD* create_board(int rows, int cols);
+BOARD* create_board(int rows, int , int y, int x);
 void draw_board(BOARD* self);
