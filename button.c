@@ -1,30 +1,25 @@
 #include "button.h"
 
-/////////////////////////////////////////////////////////////////////////////
-
 // SETS THE ATTRIBUTES FOR A GIVEN BUTTON OBJECT
-void init_button(BUTTON* self, char text[20], int highlighted, int y, int x){
+void init_button(BUTTON* self, char text[20], int highlighted, int y, int x, int action){
 
   self->y = y;
   self->x = x;
   strcpy(self->text, text);
   self->highlighted = highlighted;
+  self->action = action;
   self->win = newwin(BUTTON_H, BUTTON_W, y, x);
 
 }
 
-/////////////////////////////////////////////////////////////////////////////
-
 // ALLOCATES MEMORY FOR A NEW BUTTON OBJECT
-BUTTON* create_button(char text[20], int highlighted, int y, int x){
+BUTTON* create_button(char text[20], int highlighted, int y, int x, int action){
 
   BUTTON* newButton = (BUTTON*) malloc(sizeof(BUTTON));
-  init_button(newButton, text, highlighted, y, x );
+  init_button(newButton, text, highlighted, y, x, action);
   return newButton;
 
 }
-
-/////////////////////////////////////////////////////////////////////////////
 
 void draw_button(BUTTON* self){
 

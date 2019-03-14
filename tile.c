@@ -1,27 +1,19 @@
 #include "tile.h"
 
-/////////////////////////////////////////////////////////////////////////////
-
-
 // Tile constructor: Sets the tile's attributes
-void init_tile(TILE* self, char type[2], char letter, int xLetter, int xWord, int y, int x, int color, int s){
+void init_tile(TILE* self, char type[2], char letter, int xLetter, int xWord, int y, int x, int color, int h){
 
   strcpy(self->type, type);
   self->currentLetter = letter;
-
   self->letterMulti = xLetter;
   self->wordMulti = xWord;
-
   self->y = y;
   self->x = x;
   self->color = color;
-  self->selected = s;
-
+  self->highlighted = h;
   self->win = newwin(TILE_H, TILE_W, y, x);
 
 }
-
-/////////////////////////////////////////////////////////////////////////////
 
 // Allocates memory for a tile and calls the constuctor based on its type
 TILE* create_tile(char tileType[2], int y, int x){
@@ -30,14 +22,19 @@ TILE* create_tile(char tileType[2], int y, int x){
 
   if(strcmp(tileType, "  ") == 0)
     init_tile(newTile, tileType, ' ', 0, 0, y, x, 1, 0);
+
   else if(strcmp(tileType, "ST") == 0)
     init_tile(newTile, tileType, ' ', 0, 2, y, x, 2, 1);
+
   else if(strcmp(tileType, "DL") == 0)
     init_tile(newTile, tileType, ' ', 2, 0, y, x, 3, 0);
+
   else if(strcmp(tileType, "TL") == 0)
     init_tile(newTile, tileType, ' ', 3, 0, y, x, 4, 0);
+
   else if(strcmp(tileType, "DW") == 0)
     init_tile(newTile, tileType, ' ', 0, 2, y, x, 5, 0);
+
   else if(strcmp(tileType, "TW") == 0)
     init_tile(newTile, tileType, ' ', 0, 3, y, x, 6, 0);
 
@@ -77,11 +74,13 @@ void draw_tile(TILE* self){
 
 
   // DRAWS A BOX AROUND THE TILE THE TILE IS CURRENTLY SELECTED
-  if(self->selected == 1){
+  if(self->highlighted == 1){
+
     mvwaddch(self->win, 0, 0, ACS_ULCORNER);
     mvwaddch(self->win, 0, 4, ACS_URCORNER);
     mvwaddch(self->win, 2, 4, ACS_LRCORNER);
     mvwaddch(self->win, 2, 0, ACS_LLCORNER);
+
   }
 
   // DRAWS THE TILE'S HEADER IF IT HAS ONE

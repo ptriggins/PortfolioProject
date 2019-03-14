@@ -14,24 +14,46 @@ int run_pause_menu();
 
 int main(void){
 
-  init_ncurses();       // INITIALIZES DRAWING WITH NCURSES
-  start_color();        // ENABLES DRAWING IN COLOR
-  refresh();            // REFRESHES THE PARENT WINDOW
+  init_ncurses();       // Initializes drawing with ncurses
+  start_color();        // Enables drawin in color
+  refresh();            // Draws the parent window
 
-  // CHOOSES WHAT LOOP TO RUN BASED ON THE VALUE OF currentLoop
+  // Initializes the start menu
+  int* startCenter = get_center(BUTTON_H, BUTTON_W);
+  char startNames[3][BUTTON_W] = {"1-PLAYER GAME", "2-PLAYER GAME", "QUIT"};
+  int startActions[3] = {1, 1, 3};
+  MENU* startMenu = create_menu(startCenter[0] - BUTTON_H, startCenter[1], 3, startNames, startActions, 0);
+
+  // Initializes the gameboard
+  int* boardCenter = get_center(BOARD_ROWS * TILE_H, BOARD_COLS * TILE_W);
+  BOARD* gameboard = create_board(BOARD_ROWS, BOARD_COLS, boardCenter[0], boardCenter[1]);
+
+  // Initializes the pause menu
+  int* pauseCenter = get_center(BUTTON_H, BUTTON_W);
+  char pauseNames[3][BUTTON_W] = {"Resume", "Return to Start Menu", "QUIT"};
+  int pauseActions[3] = {1, 0, 3};
+  MENU* pauseMenu = create_menu(pauseCenter[0] - BUTTON_H, pauseCenter[1], 3, pauseNames, pauseActions, 2);
+
+  int ch;
   int currentLoop = 0;
+
   while(currentLoop != 3){
 
-    switch(currentLoop){
-      case 0:
-        currentLoop = run_start_menu();
-      case 1:
-        currentLoop = run_game_loop();
-      case 2:
-        currentLoop = run_pause_menu();
-      case 3:
-        break;
-    }
+    if(currentLoop == 0)
+        draw_menu(startMenu);
+    else if(currentLoop == 1)
+        draw_board(gameboard);
+    else if(currentLoop == 2)
+        draw_menu(pauseMenu);
+
+    ch = getch();
+
+    if(currentLoop == 0)
+        currentLoop = handle_menu_events(startMenu, ch);      // Handles events that occur in the start menu
+    else if(currentLoop == 1)
+        currentLoop = handle_board_events(gameboard, ch);     // Handles events that occur on the game board
+    else if(currentLoop == 2)
+        currentLoop = handle_menu_events(pauseMenu, ch);      // Handles events that occur in the pause menu
 
   }
 
@@ -47,187 +69,5 @@ void init_ncurses(){
   keypad(stdscr, TRUE);   // ALLOWS FOR KEYBOARD INPUT
   noecho();               // DISABLES PRINTING OF USER INPUT TO THE TERMINAL
   cbreak();               // MAKES USER INPUT AVAILABLE AT TIME OF KEYPRESS
-
-}
-
-// DRAWING AND EVENT HANDLING FOR THE START MENU
-int run_start_menu(){
-
-  // Initializes the start menu
-  int* startCenter = get_center(BUTTON_H, BUTTON_W);
-  char buttonNames[3][BUTTON_W] = {"1-PLAYER GAME", "2-PLAYER GAME", "QUIT"};
-  int buttonActions[3] = {1, 1, 3};
-  MENU* startMenu = create_menu(startCenter[0] - BUTTON_H, startCenter[1], 3, buttonNames, buttonActions);
-
-  int currentButton = 0;      // Tracks currently selected button
-
-  draw_menu(startMenu);
-
-  while(1){
-
-    // GETS A KEYPRESS FROM THE USER
-    int ch = getch();
-
-    // QUITS THE PROGRAM IF THE USER PRESSES F1
-    if(ch == 265) {return 0;}
-
-    // CHANGES BUTTON SELECTED WHEN USER PRESSES UP KEY
-    if(ch == KEY_UP && currentButton > 0){
-      startMenu->buttons[currentButton]->highlighted = 0;
-      startMenu->buttons[currentButton - 1]->highlighted = 1;
-      currentButton--;
-    }
-    // CHANGES BUTTON SELECTED WHEN USER PRESSES DOWN KEY
-    else if(ch == KEY_DOWN && currentButton < 2){
-      startMenu->buttons[currentButton]->highlighted = 0;
-      startMenu->buttons[currentButton + 1]->highlighted = 1;
-      currentButton++;
-    }
-    // PERFORMS APPRPRIATE ACTION WHEN USER PRESSES ENTER
-    else if(ch == 10){
-
-      // ERASES THE MENU AND SIGNALS TO MOVE ON TO THE GAME LOOP
-      if(currentButton == 0){
-        for(int i = 0; i < 3; i++){
-          werase(startMenu->buttons[currentButton]->win);
-        }
-        return 1;
-      }
-      // ERASES THE MENU AND SIGNALS TO MOVE ON TO THE GAME LOOP
-      else if (currentButton == 1){
-
-        for(int i = 0; i < 3; i++){
-          werase(startMenu->buttons[currentButton]->win);
-        }
-        return 1;
-
-      }
-      // SIGNALS TO QUIT THE PROGRAM
-      else
-        return 3;
-
-    }
-    draw_menu(startMenu);
-
-  }
-
-}
-
-int run_game_loop(){
-
-  // FINDS COORDINATES OF A CENTERED BOARD OF A GIVEN SIZE
-  int boardY = (LINES / 2) - (BOARD_ROWS / 2) * TILE_H;
-  int boardX = (COLS / 2) - (BOARD_COLS / 2) * TILE_W;
-
-  // DECLARES A GAMEBOARD OF A GIVEN SIZE AND LOCATION
-  BOARD* gameboard = create_board(15, 15, boardY, boardX);
-
-  // TRACKS THE CURRENT TILE SELECTED IN THE GAMEBOARD
-  int currentX = 7,  currentY = 7;
-
-  // DRAWS THE GAMEBOARD TO THE PARENT SCREEN
-  draw_board(gameboard);
-
-  // HANDLES USER INPUT
-  while(1){
-
-    // GETS A KEYPRESS FROM THE USER
-    int ch = getch();
-
-    // ENDS THE PROGRAM IF THE USER PRESSES F1
-    if(ch == 265) {break;}
-
-    // SWITCHES SELECTED TILE IN EVENT OF UP KEY PRESS
-    if(ch == KEY_UP && currentY > 0){
-      gameboard->tiles[currentX][currentY]->selected = 0;
-      gameboard->tiles[currentX][currentY - 1]->selected = 1;
-      currentY -= 1;
-    }
-    // SWITCHES SELECTED TILE IN EVENT OF DOWN KEY PRESS
-    else if(ch == KEY_DOWN && currentY < 14){
-      gameboard->tiles[currentX][currentY]->selected = 0;
-      gameboard->tiles[currentX][currentY + 1]->selected = 1;
-      currentY += 1;
-    }
-    // SWITCHES SELECTED TILE IN EVENT OF LEFT KEY PRESS
-    else if(ch == KEY_LEFT && currentX > 0){
-      gameboard->tiles[currentX][currentY]->selected = 0;
-      gameboard->tiles[currentX - 1][currentY]->selected = 1;
-      currentX -= 1;
-    }
-    // SWITCHES SELECTED TILE IN EVENT OF RIGHT KEY PRESS
-    else if(ch == KEY_RIGHT && currentX < 14){
-      gameboard->tiles[currentX][currentY]->selected = 0;
-      gameboard->tiles[currentX + 1][currentY]->selected = 1;
-      currentX += 1;
-    }
-    // OPENS THE PAUSE MENU IF THE USER PRESSES ESCAPE
-    else if(ch == 27){
-      erase_board(gameboard);
-      return 2;
-    }
-    draw_board(gameboard);
-
-  }
-  return 3;
-
-}
-
-int run_pause_menu(){
-
-  // Initializes the start menu
-  int* pauseCenter = get_center(BUTTON_H, BUTTON_W);
-  char buttonNames[3][BUTTON_W] = {"Resume", "Return to Start Menu", "QUIT"};
-  int buttonActions[3] = {1, 0, 3};
-  MENU* pauseMenu = create_menu(pauseCenter[0] - BUTTON_H, pauseCenter[1], 3, buttonNames, buttonActions);
-
-  // TRACKS THE BUTTON THAT IS CURRENTLY SELECTED IN THE MENU
-  int currentButton = 0;
-
-  draw_menu(pauseMenu);
-
-  // LOOP TO HANDLE USER INPUT
-  while(1){
-
-    int ch = getch();
-
-    if(ch == KEY_UP && currentButton > 0){
-      pauseMenu->buttons[currentButton]->highlighted = 0;
-      pauseMenu->buttons[currentButton - 1]->highlighted = 1;
-      currentButton--;
-    }
-    // CHANGES BUTTON SELECTED WHEN USER PRESSES DOWN KEY
-    else if(ch == KEY_DOWN && currentButton < 2){
-      pauseMenu->buttons[currentButton]->highlighted = 0;
-      pauseMenu->buttons[currentButton + 1]->highlighted = 1;
-      currentButton++;
-    }
-    // PERFORMS AN APPROPRIATE ACTION WHEN USER HITS ENTER ON A BUTTON
-    else if(ch == 10){
-
-      // ERASES THE MENU AND SIGNALS TO MOVE ON TO THE GAME LOOP
-      if(currentButton == 0){
-        for(int i = 0; i < 2; i++){
-          werase(pauseMenu->buttons[i]->win);
-        }
-        return 1;
-      }
-      // ERASES THE MENU AND SIGNALS TO MOVE ON TO THE GAME LOOP
-      else if (currentButton == 1){
-
-        for(int i = 0; i < 2; i++){
-          werase(pauseMenu->buttons[i]->win);
-        }
-        return 0;
-
-      }
-      else
-        return 3;
-
-    }
-
-    draw_menu(pauseMenu);
-
-  }
 
 }
