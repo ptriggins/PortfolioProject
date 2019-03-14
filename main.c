@@ -1,68 +1,31 @@
 #include <stdio.h>
 #include <ncurses.h>
 #include "board.h"
-#include "deck.h"
+#include "helper.c"
 
 int main(void){
 
-  // INITIALIZES NCURSES
-  initscr();
-  keypad(stdscr, TRUE);
-  clear();
-  noecho();
-  cbreak();
+  // INITIALIZES DRAWING WITH NCURSES
+  init_ncurses();
+
+  // ENABLES DRAWING IN COLOR
   start_color();
 
-  // DECLARES A GAMEBOARD OF GIVEN SIZE
-  BOARD* gameboard = createBoard(15, 15);
-  int currX = 7, currY = 7;
-
-  // DECLARES A DECK OF TILES THAT CAN BE PLAYED
-  DECK* deck = CreateDeck();
-
-  // DRAWS THE PARENT SCREEN
+  // REFRESHES THE PARENT WINDOW
   refresh();
 
-  // DRAWS THE GAMEBOARD ON TOP OF THE PARENT SCREEN
-  drawBoard(gameboard);
-  // HANDLES USER INPUT
-  while(1){
+  // GETS TOP X AND Y COORDINATES FOR THE MENU RELATIVE TO THE CENTER
+  int startCoords[2] = get_center(BUTTON_H, BUTTON_W);
 
-    // GETS A KEYPRESS FROM THE USER
-    int ch = getch();
+  // DECLARES THE BUTTONS USED IN THE START MENU
+  BUTTON* onePlayerGame = create_button("1-PLAYER GAME", 1, startY, startX);
+  BUTTON* twoPlayerGame = create_button("2-PLAYER GAME", 0, startY + BUTTON_H, startX);
+  BUTTON* quit = create_button("QUIT", 0, startY + 2 * BUTTON_H, startX);
 
-    // ENDS THE PROGRAM IF THE USER PRESSES F1
-    if(ch == 265) {break;}
+  // DECLARES A MENU REPRESENTED BY AN ARRAY OF BUTTONS
+  BUTTON* menu[3] = {onePlayerGame, twoPlayerGame, quit};
 
-    // SWITCHES SELECTED TILE IN EVENT OF UP KEY PRESS
-    if(ch == KEY_UP && currY > 0){
-      gameboard->tiles[currX][currY]->selected = 0;
-      gameboard->tiles[currX][currY - 1]->selected = 1;
-      currY -= 1;
-    }
-    // SWITCHES SELECTED TILE IN EVENT OF DOWN KEY PRESS
-    else if(ch == KEY_DOWN && currY < 14){
-      gameboard->tiles[currX][currY]->selected = 0;
-      gameboard->tiles[currX][currY + 1]->selected = 1;
-      currY += 1;
-    }
-    // SWITCHES SELECTED TILE IN EVENT OF LEFT KEY PRESS
-    else if(ch == KEY_LEFT && currX > 0){
-      gameboard->tiles[currX][currY]->selected = 0;
-      gameboard->tiles[currX - 1][currY]->selected = 1;
-      currX -= 1;
-    }
-    // SWITCHES SELECTED TILE IN EVENT OF RIGHT KEY PRESS
-    if(ch == KEY_RIGHT && currX < 14){
-      gameboard->tiles[currX][currY]->selected = 0;
-      gameboard->tiles[currX + 1][currY]->selected = 1;
-      currX += 1;
-    }
-    drawBoard(gameboard);
-
-  }
-  endwin();
-
-  return 0;
+  // TRACKS THE BUTTON THAT IS CURRENTLY SELECTED IN THE MENU
+  int currentButton = 0;
 
 }

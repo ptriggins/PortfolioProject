@@ -1,30 +1,21 @@
 #include <stdio.h>
 #include <ncurses.h>
-#include "button.h"
+#include "menu.h"
 #include "board.h"
 
 #define BOARD_ROWS 15
 #define BOARD_COLS 15
-
-/////////////////////////////////////////////////////////////////////////////
 
 void init_ncurses();
 int run_start_menu();
 int run_game_loop();
 int run_pause_menu();
 
-/////////////////////////////////////////////////////////////////////////////
-
 int main(void){
 
-  // INITIALIZES DRAWING WITH NCURSES
-  init_ncurses();
-
-  // ENABLES DRAWING IN COLOR
-  start_color();
-
-  // REFRESHES THE PARENT WINDOW
-  refresh();
+  init_ncurses();       // INITIALIZES DRAWING WITH NCURSES
+  start_color();        // ENABLES DRAWING IN COLOR
+  refresh();            // REFRESHES THE PARENT WINDOW
 
   // CHOOSES WHAT LOOP TO RUN BASED ON THE VALUE OF currentLoop
   int currentLoop = 0;
@@ -48,8 +39,6 @@ int main(void){
 
 }
 
-/////////////////////////////////////////////////////////////////////////////
-
 // SERIES OF STATEMENTS THAT ENABLE DRAWING TO THE TERMINAL
 void init_ncurses(){
 
@@ -60,8 +49,6 @@ void init_ncurses(){
 
 }
 
-/////////////////////////////////////////////////////////////////////////////
-
 // DRAWING AND EVENT HANDLING FOR THE START MENU
 int run_start_menu(){
 
@@ -69,20 +56,14 @@ int run_start_menu(){
   int startY = ((LINES - BUTTON_H) / 2) - BUTTON_H;
   int startX = (COLS - BUTTON_W) / 2;
 
-  // DECLARES THE BUTTONS USED IN THE START MENU
-  BUTTON* onePlayerGame = create_button("1-PLAYER GAME", 1, startY, startX);
-  BUTTON* twoPlayerGame = create_button("2-PLAYER GAME", 0, startY + BUTTON_H, startX);
-  BUTTON* quit = create_button("QUIT", 0, startY + 2 * BUTTON_H, startX);
-
-  // DECLARES A MENU REPRESENTED BY AN ARRAY OF BUTTONS
-  BUTTON* menu[3] = {onePlayerGame, twoPlayerGame, quit};
+  char buttonNames[3][BUTTON_W] = {"1-PLAYER GAME", "2-PLAYER GAME", "QUIT"};
+  int buttonActions[3] = {1, 1, 3};
+  MENU* startMenu = create_menu(startY, startX, 3, buttonNames, buttonActions);
 
   // TRACKS THE BUTTON THAT IS CURRENTLY SELECTED IN THE MENU
   int currentButton = 0;
 
-  for(int i = 0; i < 3; i++){
-    draw_button(menu[i]);
-  }
+  draw_menu(startMenu);
 
   while(1){
 
@@ -94,14 +75,14 @@ int run_start_menu(){
 
     // CHANGES BUTTON SELECTED WHEN USER PRESSES UP KEY
     if(ch == KEY_UP && currentButton > 0){
-      menu[currentButton]->highlighted = 0;
-      menu[currentButton - 1]->highlighted = 1;
+      startMenu->buttons[currentButton]->highlighted = 0;
+      startMenu->buttons[currentButton - 1]->highlighted = 1;
       currentButton--;
     }
     // CHANGES BUTTON SELECTED WHEN USER PRESSES DOWN KEY
     else if(ch == KEY_DOWN && currentButton < 2){
-      menu[currentButton]->highlighted = 0;
-      menu[currentButton + 1]->highlighted = 1;
+      startMenu->buttons[currentButton]->highlighted = 0;
+      startMenu->buttons[currentButton + 1]->highlighted = 1;
       currentButton++;
     }
     // PERFORMS APPRPRIATE ACTION WHEN USER PRESSES ENTER
@@ -110,7 +91,7 @@ int run_start_menu(){
       // ERASES THE MENU AND SIGNALS TO MOVE ON TO THE GAME LOOP
       if(currentButton == 0){
         for(int i = 0; i < 3; i++){
-          werase(menu[i]->win);
+          werase(startMenu->buttons[currentButton]->win);
         }
         return 1;
       }
@@ -118,7 +99,7 @@ int run_start_menu(){
       else if (currentButton == 1){
 
         for(int i = 0; i < 3; i++){
-          werase(menu[i]->win);
+          werase(startMenu->buttons[currentButton]->win);
         }
         return 1;
 
@@ -128,17 +109,11 @@ int run_start_menu(){
         return 3;
 
     }
-
-    // UPDATES THE MENU
-    for(int i = 0; i < 3; i++){
-      draw_button(menu[i]);
-    }
+    draw_menu(startMenu);
 
   }
 
 }
-
-/////////////////////////////////////////////////////////////////////////////
 
 int run_game_loop(){
 
@@ -199,8 +174,6 @@ int run_game_loop(){
   return 3;
 
 }
-
-/////////////////////////////////////////////////////////////////////////////
 
 int run_pause_menu(){
 
