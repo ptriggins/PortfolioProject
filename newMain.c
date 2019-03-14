@@ -2,6 +2,7 @@
 #include <ncurses.h>
 #include "menu.h"
 #include "board.h"
+#include "helper.c"
 
 #define BOARD_ROWS 15
 #define BOARD_COLS 15
@@ -39,7 +40,7 @@ int main(void){
 
 }
 
-// SERIES OF STATEMENTS THAT ENABLE DRAWING TO THE TERMINAL
+// Enables drawing to the terminal
 void init_ncurses(){
 
   initscr();              // INITIALIZE THE PARENT WINDOW
@@ -52,16 +53,13 @@ void init_ncurses(){
 // DRAWING AND EVENT HANDLING FOR THE START MENU
 int run_start_menu(){
 
-  // GETS TOP X AND Y COORDINATES FOR THE MENU RELATIVE TO THE CENTER
-  int startY = ((LINES - BUTTON_H) / 2) - BUTTON_H;
-  int startX = (COLS - BUTTON_W) / 2;
-
+  // Initializes the start menu
+  int* startCenter = get_center(BUTTON_H, BUTTON_W);
   char buttonNames[3][BUTTON_W] = {"1-PLAYER GAME", "2-PLAYER GAME", "QUIT"};
   int buttonActions[3] = {1, 1, 3};
-  MENU* startMenu = create_menu(startY, startX, 3, buttonNames, buttonActions);
+  MENU* startMenu = create_menu(startCenter[0] - BUTTON_H, startCenter[1], 3, buttonNames, buttonActions);
 
-  // TRACKS THE BUTTON THAT IS CURRENTLY SELECTED IN THE MENU
-  int currentButton = 0;
+  int currentButton = 0;      // Tracks currently selected button
 
   draw_menu(startMenu);
 
@@ -177,24 +175,16 @@ int run_game_loop(){
 
 int run_pause_menu(){
 
-  // GETS TOP X AND Y COORDINATES FOR THE MENU RELATIVE TO THE CENTER
-  int startY = ((LINES - BUTTON_H) / 2) - BUTTON_H;
-  int startX = (COLS - BUTTON_W) / 2;
-
-  // DECLARES THE BUTTONS THAT WILL BE USED IN THE PAUSE MENU
-  BUTTON* resume = create_button("Resume", 1, startY, startX);
-  BUTTON* returnToStart = create_button("Return to Start Menu", 0, startY + BUTTON_H, startX);
-  BUTTON* quitGame = create_button("Quit Game", 0, startY + 2 * BUTTON_H, startX);
-
-  // DECLARES A MENU AS AN ARRAY OF BUTTONS
-  BUTTON* menu[3] = {resume, returnToStart, quitGame};
+  // Initializes the start menu
+  int* pauseCenter = get_center(BUTTON_H, BUTTON_W);
+  char buttonNames[3][BUTTON_W] = {"Resume", "Return to Start Menu", "QUIT"};
+  int buttonActions[3] = {1, 0, 3};
+  MENU* pauseMenu = create_menu(pauseCenter[0] - BUTTON_H, pauseCenter[1], 3, buttonNames, buttonActions);
 
   // TRACKS THE BUTTON THAT IS CURRENTLY SELECTED IN THE MENU
   int currentButton = 0;
 
-  for(int i = 0; i < 3; i++){
-    draw_button(menu[i]);
-  }
+  draw_menu(pauseMenu);
 
   // LOOP TO HANDLE USER INPUT
   while(1){
@@ -202,14 +192,14 @@ int run_pause_menu(){
     int ch = getch();
 
     if(ch == KEY_UP && currentButton > 0){
-      menu[currentButton]->highlighted = 0;
-      menu[currentButton - 1]->highlighted = 1;
+      pauseMenu->buttons[currentButton]->highlighted = 0;
+      pauseMenu->buttons[currentButton - 1]->highlighted = 1;
       currentButton--;
     }
     // CHANGES BUTTON SELECTED WHEN USER PRESSES DOWN KEY
     else if(ch == KEY_DOWN && currentButton < 2){
-      menu[currentButton]->highlighted = 0;
-      menu[currentButton + 1]->highlighted = 1;
+      pauseMenu->buttons[currentButton]->highlighted = 0;
+      pauseMenu->buttons[currentButton + 1]->highlighted = 1;
       currentButton++;
     }
     // PERFORMS AN APPROPRIATE ACTION WHEN USER HITS ENTER ON A BUTTON
@@ -218,7 +208,7 @@ int run_pause_menu(){
       // ERASES THE MENU AND SIGNALS TO MOVE ON TO THE GAME LOOP
       if(currentButton == 0){
         for(int i = 0; i < 2; i++){
-          werase(menu[i]->win);
+          werase(pauseMenu->buttons[i]->win);
         }
         return 1;
       }
@@ -226,7 +216,7 @@ int run_pause_menu(){
       else if (currentButton == 1){
 
         for(int i = 0; i < 2; i++){
-          werase(menu[i]->win);
+          werase(pauseMenu->buttons[i]->win);
         }
         return 0;
 
@@ -236,10 +226,7 @@ int run_pause_menu(){
 
     }
 
-    // UPDATES THE MENU
-    for(int i = 0; i < 3; i++){
-      draw_button(menu[i]);
-    }
+    draw_menu(pauseMenu);
 
   }
 

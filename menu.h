@@ -9,6 +9,7 @@ typedef struct MENU{
   int x;
   int numButtons;
   BUTTON** buttons;
+  int currentSelection;     // The currently highlighted button in the menu
 
 }MENU;
 

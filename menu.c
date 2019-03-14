@@ -8,6 +8,7 @@ void init_menu(MENU* self, int y, int x, int numButtons, char buttonNames[numBut
   for(int i = 0; i < numButtons; i++){
     self->buttons[i] = create_button(buttonNames[i], 0, y + i * BUTTON_H, x);
   }
+  self->currentSelection = 0;
   self->buttons[0]->highlighted = 1;
 
 }
