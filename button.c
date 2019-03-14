@@ -54,19 +54,3 @@ void draw_button(BUTTON* self){
   wrefresh(self->win);
 
 }
-
-/////////////////////////////////////////////////////////////////////////////
-
-void erase_button(BUTTON* self){
-
-  // SETS TEXT AND BACKGROUND COLOR TO BLACK
-  init_pair(1, COLOR_BLACK, COLOR_BLACK);
-  wattron(self->win, COLOR_PAIR(1));
-
-  werase(self->win);
-
-  // REFRESHES THE BUTTON
-  wrefresh(self->win);
-
-
-}

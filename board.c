@@ -70,3 +70,17 @@ void draw_board(BOARD* self){
   }
 
 }
+
+/////////////////////////////////////////////////////////////////////////////
+
+void erase_board(BOARD* self){
+
+  // ERASES THE WINDOW FOR EACH OF THE TILES IN THE GAMEBOARD
+  for(int i = 0; i < self->rows; i++){
+    for(int j = 0; j < self->cols; j++){
+      werase(self->tiles[i][j]->win);
+      wrefresh(self->tiles[i][j]->win);
+    }
+  }
+
+}
