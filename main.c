@@ -36,29 +36,55 @@ int main(int argc, char* argv[]){
   while (1){
 
     if (ch == KEY_UP && currentRow > 0){
+
       gameboard->cells[currentRow][currentCol]->selected = 0;
       currentRow--;
+
+      if (gameboard->topVisibleRow > 0){
+        gameboard->topVisibleRow--;
+        gameboard->bottomVisibleRow--;
+      }
+
     }
     if (ch == KEY_DOWN && currentRow < numRows - 1){
+
       gameboard->cells[currentRow][currentCol]->selected = 0;
       currentRow++;
+
+      if (gameboard->bottomVisibleRow < numRows - 1){
+        gameboard->topVisibleRow++;
+        gameboard->bottomVisibleRow++;
+      }
+
     }
     if (ch == KEY_LEFT && currentCol > 0){
+
       gameboard->cells[currentRow][currentCol]->selected = 0;
       currentCol--;
+
+      if (gameboard->leftVisibleCol > 0){
+        gameboard->leftVisibleCol--;
+        gameboard->rightVisibleCol--;
+      }
+
     }
     if (ch == KEY_RIGHT && currentCol < numCols - 1){
+
       gameboard->cells[currentRow][currentCol]->selected = 0;
       currentCol++;
+
+      if (gameboard->rightVisibleCol < numCols - 1){
+        gameboard->leftVisibleCol++;
+        gameboard->rightVisibleCol++;
+      }
+
     }
     gameboard->cells[currentRow][currentCol]->selected = 1;
-
     board_draw(gameboard);
     ch = getch();
 
   }
 
   endwin();
-
 
 }

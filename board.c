@@ -56,7 +56,7 @@ void board_init(BOARD* self, int numRows, int numCols, int screenRows, int scree
   }
   else{
     self->leftVisibleCol = ((numCols - screenCols) / 2);
-    self->rightVisibleCol = (numCols - self->leftVisibleCol) - 1;
+    self->rightVisibleCol = (numCols - self->leftVisibleCol) - 2;
   }
 
   self->window = newwin(screenRows * CELL_HEIGHT, screenCols * CELL_WIDTH, self->y, self->x);
@@ -101,6 +101,8 @@ void board_draw(BOARD* self){
       mvwprintw(self->window, y + 2, x, "     ");
 
       if (self->cells[i][j]->selected == 1){
+        //mvwprintw(self->window, y + 1, x, "%d", self->topVisibleRow);
+        //mvwprintw(self->window, y + 2, x, "%d", self->bottomVisibleRow);
         mvwaddch(self->window, y, x, ACS_ULCORNER);
         mvwaddch(self->window, y, x + 4, ACS_URCORNER);
         mvwaddch(self->window, y + 2, x, ACS_LLCORNER);
