@@ -5,8 +5,8 @@
 
 typedef CHIP{
 
-  int y;    // Y COORDINATE OF THE TOP LEFT CORNER OF THE CHIP
-  int x;    // X COORDINATE OF THE TOP LEFT CORNER OF THE CHIP
+  int y;
+  int x;
   char letter;
   char score;
   int highlighted;

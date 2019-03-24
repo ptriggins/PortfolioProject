@@ -4,70 +4,143 @@
 #include "board.h"
 #include "helper.c"
 
-#define BOARD_ROWS 15
-#define BOARD_COLS 15
+#define START_SCREEN 0
+#define GAME_SCREEN 1
+#define PAUSE_SCREEN 2
 
-void init_ncurses();
-int run_start_menu();
-int run_game_loop();
-int run_pause_menu();
+#define ENTER 10
+#define ESCAPE 27
 
-int main(void){
+int main(int argc, char* argv[]){
 
-  init_ncurses();       // Initializes drawing with ncurses
-  start_color();        // Enables drawin in color
-  refresh();            // Draws the parent window
+  // Initializes drawing with ncurses
+  initscr();
+  start_color();
+  noecho();
 
-  // Initializes the start menu
-  int* startCenter = get_center(BUTTON_H, BUTTON_W);
-  char startNames[3][BUTTON_W] = {"1-PLAYER GAME", "2-PLAYER GAME", "QUIT"};
-  int startActions[3] = {1, 1, 3};
-  MENU* startMenu = create_menu(startCenter[0] - BUTTON_H, startCenter[1], 3, startNames, startActions, 0);
+  // Enables getting input from the keyboard
+  keypad(stdscr, TRUE);
+  cbreak();
+  nodelay(stdscr, TRUE);
 
-  // Initializes the gameboard
-  int* boardCenter = get_center(BOARD_ROWS * TILE_H, BOARD_COLS * TILE_W);
-  BOARD* gameboard = create_board(BOARD_ROWS, BOARD_COLS, boardCenter[0], boardCenter[1]);
+  // Gets the coordinates of the center of the screen
+  int centerY = ROWS / 2, centerX = COLS / 2;
+
+  // Initializes start menu
+  MENU* startMenu = menu_create(centerY - (3 / 2) * BUTTON_H, centerX - (1 / 2) * BUTTON_W, 3);
+  strcpy("1-Player", startMenu->button[0]->name);
+  strcpy("2-Player", startMenu->button[1]->name);
+  strcpy("Quit", startMenu->button[2]->name);
+  startMenu.buttons[currentSelection]->selected = 1;
 
   // Initializes the pause menu
-  int* pauseCenter = get_center(BUTTON_H, BUTTON_W);
-  char pauseNames[3][BUTTON_W] = {"Resume", "Return to Start Menu", "QUIT"};
-  int pauseActions[3] = {1, 0, 3};
-  MENU* pauseMenu = create_menu(pauseCenter[0] - BUTTON_H, pauseCenter[1], 3, pauseNames, pauseActions, 2);
+  MENU* pauseMenu = menu_create(centerY - (3 / 2) * BUTTON_H, centerX - (1 / 2) * BUTTON_W, 3);
+  strcpy("Resume", pauseMenu->button[0]->name);
+  strcpy("Start Menu", pauseMenu->button[1]->name);
+  strcpy("Quit", pauseMenu->button[2]->name);
 
-  int ch;
-  int currentLoop = 0;
+  refresh();
 
-  while(currentLoop != 3){
+  // Begins out put by drawing the start menu
+  int currentScreen = START_SCREEN;
+  draw_menu(startMenu);
 
-    if(currentLoop == 0)
-        draw_menu(startMenu);
-    else if(currentLoop == 1)
-        draw_board(gameboard);
-    else if(currentLoop == 2)
-        draw_menu(pauseMenu);
+  // Game Loop
+  while(1){
 
-    ch = getch();
+    // Gets a keypress from the user
+    int ch = getch();
 
-    if(currentLoop == 0)
-        currentLoop = handle_menu_events(startMenu, ch);      // Handles events that occur in the start menu
-    else if(currentLoop == 1)
-        currentLoop = handle_board_events(gameboard, ch);     // Handles events that occur on the game board
-    else if(currentLoop == 2)
-        currentLoop = handle_menu_events(pauseMenu, ch);      // Handles events that occur in the pause menu
+    // Handles events that occur in the start menu
+    if(currentScreen = START_SCREEN){
+
+      // Changes button selected on the menu screen
+      if(ch == KEY_UP && startMenu->currentSelection > 0){
+
+        startMenu->buttons[startMenu->currentSelection] = 0;
+        startMenu->buttons[startMenu->currentSelection + 1] = 1;
+        startMenu->currentSelection += 1;
+
+      }
+      else if(ch == KEY_DOWN && startMenu->currentSelection < numButtons - 1){
+
+        startMenu->buttons[startMenu->currentSelection] = 0;
+        startMenu->buttons[startMenu->currentSelection - 1] = 1;
+        startMenu->currentSelection -= 1;
+
+      }
+      // Specifies behavior when user hits enter on a button
+      else if(ch == 10){
+
+        if(strcmp(startMenu->buttons[startMenu->currentSelection]->name, "1-Player") == 0){
+          currentScreen = GAME_SCREEN;
+        }
+        else if(strcmp(startMenu->buttons[startMenu->currentSelection]->name, "2-Player") == 0){
+          currentScreen = GAME_SCREEN;
+        }
+        else if(strcmp(startMenu->buttons[startMenu->currentSelection]->name, "Quit") == 0){
+          break;
+        }
+
+      }
+
+    }
+    // Handles events that occur while the user is playing the game
+    else if(currentScreen = GAME_SCREEN){
+
+      if(ch == KEY_UP){
+
+      }
+      else if(ch == KEY_DOWN){
+
+      }
+      else if(ch == KEY_LEFT){
+
+      }
+      else if(ch == KEY_RIGHT){
+
+      }
+
+    }
+    // Handles events that occur in the pause screen
+    else if(currentScreen == PAUSE_SCREEN){
+
+      // Changes button selected on the menu screen
+      if(ch == KEY_UP){
+
+        pauseMenu->buttons[pauseMenu->currentSelection] = 0;
+        pauseMenu->buttons[pauseMenu->currentSelection + 1] = 1;
+        pauseMenu->currentSelection += 1;
+
+      }
+      else if(ch == KEY_DOWN){
+
+        pauseMenu->buttons[pauseMenu->currentSelection] = 0;
+        pauseMenu->buttons[pauseMenu->currentSelection - 1] = 1;
+        pauseMenu->currentSelection -= 1;
+
+      }
+      // Specifies behavior when user hits enter on a button
+      else if(ch == 10){
+
+        if(strcmp(startMenu->buttons[startMenu->currentSelection]->name, "Resume") == 0){
+          currentScreen = GAME_SCREEN;
+        }
+        else if(strcmp(startMenu->buttons[startMenu->currentSelection]->name, "Start Menu") == 0){
+          currentScreen = START_SCREEN;
+        }
+        else if(strcmp(startMenu->buttons[startMenu->currentSelection]->name, "Quit") == 0){
+          break;
+        }
+
+      }
+
+    }
+
+
 
   }
 
-  // ENDS NCURSES MODE
   endwin();
-
-}
-
-// Enables drawing to the terminal
-void init_ncurses(){
-
-  initscr();              // INITIALIZE THE PARENT WINDOW
-  keypad(stdscr, TRUE);   // ALLOWS FOR KEYBOARD INPUT
-  noecho();               // DISABLES PRINTING OF USER INPUT TO THE TERMINAL
-  cbreak();               // MAKES USER INPUT AVAILABLE AT TIME OF KEYPRESS
 
 }

@@ -1,120 +1,122 @@
 #include "board.h"
 
-// Initializes a board object with given attributes
-void init_board(BOARD* self, int rows, int cols, int y, int x) {
+// Initializes all of a board's attributes
+void init_board(BOARD* self, int numRows, int numCols, int screenRows, int screenCols){
 
-  self->rows = rows;
-  self->cols = cols;
-  self->y = y;
-  self->x = x;
-  self->currentTile[0] = rows / 2 + 1;
-  self->currentTile[1] = rows / 2 + 1;
+  if(numRows <= screenRows)
+    self->y = ((screenRows / 2) - (numRows / 2)) * CELL_HEIGHT;
+  else
+    self->y = 0;
 
-  int topY = -rows / 2, topX = -cols / 2;     // Sets loop variables relative to start tile
+  if(numCols <= screenCols)
+    self->x = ((screenCols / 2) - (numCols / 2)) * CELL_WIDTH;
+  else
+    self->x = 3 * CELL_WIDTH;
 
-  // Formulically initiallizes each tile
-  for(int i = topY; i < topY + rows; i++){
-    for(int j = topX; j < topX + cols; j++){
+  printf("%d %d", self->y, self->x);
 
-      // Calculates the actual coordinates of the tile on the board
-      int t_x = i + rows / 2, t_y = j + rows / 2;
+  self->numRows = numRows;
+  self->numCols = numCols;
 
-      // Initializes the starting tile
-      if(i == 0 && j == 0)
-        self->tiles[t_x][t_y] = create_tile("ST", y + t_y * TILE_H, x +t_x * TILE_W);
-      // Initializes triple word tiles
-      else if(i % 7 == 0 && j % 7 == 0)
-        self->tiles[t_x][t_y] = create_tile("TW", y + t_y * TILE_H, x + t_x * TILE_W);
-      // Initializes double word tiles
-      else if(abs(i) > 2 && abs(j) > 2 && abs(i) == abs(j))
-        self->tiles[t_x][t_y] = create_tile("DW", y + t_y * TILE_H, x + t_x * TILE_W);
-      // Initializes tripple letter tiles
-      else if(abs(i) % 4 == 2 && abs(j) % 4 == 2)
-        self->tiles[t_x][t_y] = create_tile("TL", y + t_y * TILE_H, x + t_x * TILE_W);
-      // Initializes double letter tiles
-      else if((abs(i) % 7 == 0 && abs(j) % 4 == 0) || (abs(i) % 4 == 0 && abs(j) % 7 == 0))
-        self->tiles[t_x][t_y] = create_tile("DL", y + t_y * TILE_H, x + t_x * TILE_W);
-      else if((abs(i) == 1 && abs(j) % 4 == 1) || (abs(j) == 1 && abs(i) % 4 == 1))
-        self->tiles[t_x][t_y] = create_tile("DL", y+  t_y * TILE_H, x + t_x * TILE_W);
-      else
-        self->tiles[t_x][t_y] = create_tile("  ", y + t_y * TILE_H, x + t_x * TILE_W);
+  // Variables relating to a cell's attributes
+  int cellRow, cellCol;
+  int cellY, cellX;
+  char type[3];
+
+  // Calculates coordinates such that the loop centers around 0, 0
+  int topY = -numRows / 2;
+  int topX = -numCols / 2;
+
+  // Creates each cell in the gameboard
+  for(int i = topY; i < topY + numRows; i++){
+    for(int j = topX; j < topX + numCols; j++){
+
+      // Calculates the row and column a cell falls in
+      cellRow = j + numRows / 2;
+      cellCol = i + numCols / 2;
+
+      // Calculates the cell's actual coordinates
+      cellY = cellRow * CELL_HEIGHT;
+      cellX = cellCol * CELL_WIDTH;
+
+      // Gets a cell's type based on its distance from row 0 and column 0
+      cell_get_type(type, abs(i), abs(j));
+
+      // Creates the cell of previously determined type at a given row and column
+      self->cells[cellRow][cellCol] = cell_create(type, cellY, cellX);
 
     }
+    printf("\n");
   }
+
+  if (numRows <= screenRows){
+    self->topVisibleRow = 0;
+    self->bottomVisibleRow = numRows - 1;
+  }
+  else{
+    self->topVisibleRow = ((numRows - screenRows) / 2);
+    self->bottomVisibleRow = (numRows - self->topVisibleRow) - 1;
+  }
+
+  if (numCols <= screenCols){
+    self->leftVisibleCol = 0;
+    self->rightVisibleCol = numCols - 1;
+  }
+  else{
+    self->leftVisibleCol = ((numCols - screenCols) / 2);
+    self->rightVisibleCol = (numCols - self->leftVisibleCol) - 1;
+  }
+
+  self->window = newwin(screenRows * CELL_HEIGHT, screenCols * CELL_WIDTH - 3, self->y, self->x);
 
 }
 
-// ALLOCATES MEMORY FOR A BOARD OF A GIVEN SIZE
-BOARD* create_board(int rows, int cols, int y, int x) {
+// Allocates memory for a board with variable rows and columns
+BOARD* board_create(int numRows, int numCols, int screenRows, int screenCols){
 
   BOARD* newBoard = (BOARD*) malloc(sizeof(BOARD));
-  init_board(newBoard, rows, cols, y, x);
+
+  // Allocates memory for a two dimensional array of cell pointers
+  newBoard->cells = (CELL***) malloc(numRows * sizeof(CELL**));
+  for (int i = 0; i < numRows; i++){
+    newBoard->cells[i] = (CELL**) malloc(numCols * sizeof(CELL*));
+  }
+
+  init_board(newBoard, numRows, numCols, screenRows, screenCols);
   return newBoard;
 
 }
 
-void switch_tile(BOARD* self, int newTile[2]) {
+void board_draw(BOARD* self){
 
-  self->tiles[self->currentTile[0]][self->currentTile[1]]->highlighted = 0;
-  self->tiles[newTile[0]][newTile[1]]->highlighted = 0;
-  self->currentTile[0] = newTile[0];
-  self->currentTile[1] = newTile[1];
+  // Defines background a foreground combinations for each cell type in the board
+  init_pair(1, COLOR_WHITE, COLOR_YELLOW);
+  init_pair(2, COLOR_WHITE, COLOR_MAGENTA);
+  init_pair(3, COLOR_WHITE, COLOR_CYAN);
+  init_pair(4, COLOR_WHITE, COLOR_BLUE);
+  init_pair(5, COLOR_WHITE, COLOR_RED);
 
-}
+  int y = 0, x = 0;
+  printf("%d %d", y, x);
 
-int handle_board_events(BOARD* self, int event) {
+  for (int i = self->topVisibleRow; i <= self->bottomVisibleRow; i++){
+    for (int j = self->leftVisibleCol; j <= self->rightVisibleCol; j++){
 
-  if(event == 265)
-    return 3;
-  else if(event == 27) {
-    erase_board(self);
-    return 2;
-  }
+      wattron(self->window, A_BOLD);
+      wattron(self->window, COLOR_PAIR(self->cells[i][j]->color));
 
-  int newTile[2] = {self->currentTile[0], self->currentTile[1]};
+      mvwprintw(self->window, y, x, "%s   ", self->cells[i][j]->type);
+      mvwprintw(self->window, y + 1, x, "     ");
+      mvwprintw(self->window, y + 2, x, "     ");
 
-  if(event == KEY_UP && self->currentTile[1] > 0) {
-    newTile[1]--;
-    switch_tile(self, newTile);
-  }
-
-  else if(event == KEY_DOWN && self->currentTile[1] < self->rows) {
-    newTile[1]++;
-    switch_tile(self, newTile);
-  }
-
-  else if(event == KEY_LEFT && self->currentTile[0] > 0) {
-    newTile[0]++;
-    switch_tile(self, newTile);
-  }
-
-  else if(event == KEY_RIGHT && self->currentTile[1] < self->cols) {
-    newTile[0]--;
-    switch_tile(self, newTile);
-  }
-
-  draw_board(self);
-  return 1;
-
-}
-
-void draw_board(BOARD* self){
-
-  for(int i = 0; i < self->rows; i++){
-    for(int j = 0; j < self->cols; j++){
-      draw_tile(self->tiles[i][j]);
+      x += CELL_WIDTH;
     }
+
+    x = 0;
+    y += CELL_HEIGHT;
+
   }
 
-}
-
-void erase_board(BOARD* self){
-
-  for(int i = 0; i < self->rows; i++){
-    for(int j = 0; j < self->cols; j++){
-      werase(self->tiles[i][j]->win);
-      wrefresh(self->tiles[i][j]->win);
-    }
-  }
+  wrefresh(self->window);
 
 }

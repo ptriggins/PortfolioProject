@@ -1,5 +1,5 @@
 CC = gcc
 CFLAGS = -I.
 
-scrabble: newMain.c menu.c button.c board.c tile.c
-	$(CC) -Wall newMain.c menu.c button.c board.c tile.c -lncurses -std=c11
+scrabble: main.c board.c cell.c
+	$(CC) -Wall main.c board.c cell.c -lncurses -std=c11
