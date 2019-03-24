@@ -3,7 +3,9 @@
 // Initializes all of a board's attributes
 void init_board(BOARD* self, int numRows, int numCols, int screenRows, int screenCols){
 
-  if(numRows <= screenRows)
+  screenCols -= 6;
+
+  if (numRows <= screenRows)
     self->y = ((screenRows / 2) - (numRows / 2)) * CELL_HEIGHT;
   else
     self->y = 0;
@@ -46,7 +48,6 @@ void init_board(BOARD* self, int numRows, int numCols, int screenRows, int scree
       self->cells[cellRow][cellCol] = cell_create(type, cellY, cellX);
 
     }
-    printf("\n");
   }
 
   if (numRows <= screenRows){
@@ -67,7 +68,7 @@ void init_board(BOARD* self, int numRows, int numCols, int screenRows, int scree
     self->rightVisibleCol = (numCols - self->leftVisibleCol) - 1;
   }
 
-  self->window = newwin(screenRows * CELL_HEIGHT, screenCols * CELL_WIDTH - 3, self->y, self->x);
+  self->window = newwin(screenRows * CELL_HEIGHT, screenCols * CELL_WIDTH, self->y, self->x);
 
 }
 
