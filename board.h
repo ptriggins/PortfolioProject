@@ -15,4 +15,5 @@ typedef struct BOARD{
 }BOARD;
 
 BOARD* board_create(int numRows, int numCols, int screenRows, int screenCols);
+void board_change_selected_cell(BOARD* board, int event);
 void board_draw(BOARD* self);

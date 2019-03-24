@@ -1,10 +1,11 @@
 #include "cell.h"
 
 // Initializes a cells attributes based on a given type
-void cell_init(CELL* self, char type[3], int y, int x){
+void cell_init(CELL* self, char type[3]){
 
-  self->y = y;
-  self->x = x;
+  self->selected = 0;
+  self->occupied = 0;
+
   strcpy(self->type, type);
 
   if (strcmp(type, "  ") == 0){
@@ -16,6 +17,7 @@ void cell_init(CELL* self, char type[3], int y, int x){
     self->letterMultiplier = 0;
     self->wordMultiplier = 2;
     self->color = MAGENTA;
+    self->selected = 1;
   }
   else if (strcmp(type, "DL") == 0){
     self->letterMultiplier = 2;
@@ -38,15 +40,12 @@ void cell_init(CELL* self, char type[3], int y, int x){
     self->color = RED;
   }
 
-  self->selected = 0;
-  self->occupied = 0;
-
 }
 
-CELL* cell_create(char type[3], int y, int x){
+CELL* cell_create(char type[3]){
 
   CELL* newCell = (CELL*) malloc(sizeof(CELL));
-  cell_init(newCell, type, y, x);
+  cell_init(newCell, type);
 
   return newCell;
 

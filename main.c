@@ -2,6 +2,8 @@
 #include <ncurses.h>
 #include "board.h"
 
+#define GAMEBOARD 0
+
 int main(int argc, char* argv[]){
 
   // Initializes drawing with ncurses
@@ -20,27 +22,33 @@ int main(int argc, char* argv[]){
   int numRows = atoi(argv[1]);
   int numCols = atoi(argv[2]);
 
-  BOARD* gameboard = board_create(numRows, numCols, LINES / CELL_HEIGHT, COLS / CELL_WIDTH);
+  int screenRows = LINES / CELL_HEIGHT;
+  int screenCols = COLS / CELL_WIDTH;
 
-  int ch = getch()
+  BOARD* gameboard = board_create(numRows, numCols, screenRows, screenCols - 6);
+  int currentRow = numRows / 2;
+  int currentCol = numCols / 2;
+
+  board_draw(gameboard);
+
+  int ch = getch();
+
   while (1){
 
     if (ch == KEY_UP){
 
     }
-    else if (ch == KEY_DOWN){
+    if (ch == KEY_DOWN){
 
     }
-    else if (ch == KEY_LEFT){
+    if (ch == KEY_LEFT){
 
     }
-    else if (ch == KEY_RIGHT){
+    if (ch == KEY_RIGHT){
 
     }
 
   }
-
-  board_draw(gameboard);
 
   endwin();
 

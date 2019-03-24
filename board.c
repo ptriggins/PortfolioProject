@@ -1,9 +1,7 @@
 #include "board.h"
 
 // Initializes all of a board's attributes
-void init_board(BOARD* self, int numRows, int numCols, int screenRows, int screenCols){
-
-  screenCols -= 6;
+void board_init(BOARD* self, int numRows, int numCols, int screenRows, int screenCols){
 
   if (numRows <= screenRows)
     self->y = ((screenRows / 2) - (numRows / 2)) * CELL_HEIGHT;
@@ -15,14 +13,11 @@ void init_board(BOARD* self, int numRows, int numCols, int screenRows, int scree
   else
     self->x = 3 * CELL_WIDTH;
 
-  printf("%d %d", self->y, self->x);
-
   self->numRows = numRows;
   self->numCols = numCols;
 
   // Variables relating to a cell's attributes
   int cellRow, cellCol;
-  int cellY, cellX;
   char type[3];
 
   // Calculates coordinates such that the loop centers around 0, 0
@@ -37,15 +32,11 @@ void init_board(BOARD* self, int numRows, int numCols, int screenRows, int scree
       cellRow = j + numRows / 2;
       cellCol = i + numCols / 2;
 
-      // Calculates the cell's actual coordinates
-      cellY = cellRow * CELL_HEIGHT;
-      cellX = cellCol * CELL_WIDTH;
-
       // Gets a cell's type based on its distance from row 0 and column 0
       cell_get_type(type, abs(i), abs(j));
 
       // Creates the cell of previously determined type at a given row and column
-      self->cells[cellRow][cellCol] = cell_create(type, cellY, cellX);
+      self->cells[cellRow][cellCol] = cell_create(type);
 
     }
   }
@@ -83,7 +74,7 @@ BOARD* board_create(int numRows, int numCols, int screenRows, int screenCols){
     newBoard->cells[i] = (CELL**) malloc(numCols * sizeof(CELL*));
   }
 
-  init_board(newBoard, numRows, numCols, screenRows, screenCols);
+  board_init(newBoard, numRows, numCols, screenRows, screenCols);
   return newBoard;
 
 }
@@ -98,7 +89,6 @@ void board_draw(BOARD* self){
   init_pair(5, COLOR_WHITE, COLOR_RED);
 
   int y = 0, x = 0;
-  printf("%d %d", y, x);
 
   for (int i = self->topVisibleRow; i <= self->bottomVisibleRow; i++){
     for (int j = self->leftVisibleCol; j <= self->rightVisibleCol; j++){
@@ -106,11 +96,20 @@ void board_draw(BOARD* self){
       wattron(self->window, A_BOLD);
       wattron(self->window, COLOR_PAIR(self->cells[i][j]->color));
 
-      mvwprintw(self->window, y, x, "%s   ", self->cells[i][j]->type);
+      mvwprintw(self->window, y, x, "     ");
       mvwprintw(self->window, y + 1, x, "     ");
       mvwprintw(self->window, y + 2, x, "     ");
 
+      if (self->cells[i][j]->selected == 1){
+        mvwaddch(self->window, y, x, ACS_ULCORNER);
+        mvwaddch(self->window, y, x + 4, ACS_URCORNER);
+        mvwaddch(self->window, y + 2, x, ACS_LLCORNER);
+        mvwaddch(self->window, y + 2, x + 4, ACS_LRCORNER);
+      }
+
+      mvwprintw(self->window, y, x, "%s", self->cells[i][j]->type);
       x += CELL_WIDTH;
+
     }
 
     x = 0;

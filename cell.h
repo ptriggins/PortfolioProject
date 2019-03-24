@@ -14,16 +14,12 @@
 
 typedef struct CELL{
 
-  int y;
-  int x;
   char type[3];
-  int letterMultiplier;
-  int wordMultiplier;
+  int letterMultiplier, wordMultiplier;
   int color;
-  int selected;
-  int occupied;
+  int selected, occupied;
 
 }CELL;
 
-CELL* cell_create(char type[3], int y, int x);
+CELL* cell_create(char type[3]);
 void cell_get_type(char type[3], int yDistance, int xDistance);
