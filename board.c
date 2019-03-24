@@ -29,8 +29,8 @@ void board_init(BOARD* self, int numRows, int numCols, int screenRows, int scree
     for(int j = topX; j < topX + numCols; j++){
 
       // Calculates the row and column a cell falls in
-      cellRow = j + numRows / 2;
-      cellCol = i + numCols / 2;
+      cellRow = i + numRows / 2;
+      cellCol = j + numCols / 2;
 
       // Gets a cell's type based on its distance from row 0 and column 0
       cell_get_type(type, abs(i), abs(j));
@@ -101,8 +101,6 @@ void board_draw(BOARD* self){
       mvwprintw(self->window, y + 2, x, "     ");
 
       if (self->cells[i][j]->selected == 1){
-        //mvwprintw(self->window, y + 1, x, "%d", self->topVisibleRow);
-        //mvwprintw(self->window, y + 2, x, "%d", self->bottomVisibleRow);
         mvwaddch(self->window, y, x, ACS_ULCORNER);
         mvwaddch(self->window, y, x + 4, ACS_URCORNER);
         mvwaddch(self->window, y + 2, x, ACS_LLCORNER);
