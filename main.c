@@ -35,18 +35,26 @@ int main(int argc, char* argv[]){
 
   while (1){
 
-    if (ch == KEY_UP){
-
+    if (ch == KEY_UP && currentRow > 0){
+      gameboard->cells[currentRow][currentCol]->selected = 0;
+      currentRow--;
     }
-    if (ch == KEY_DOWN){
-
+    if (ch == KEY_DOWN && currentRow < numRows - 1){
+      gameboard->cells[currentRow][currentCol]->selected = 0;
+      currentRow++;
     }
-    if (ch == KEY_LEFT){
-
+    if (ch == KEY_LEFT && currentCol > 0){
+      gameboard->cells[currentRow][currentCol]->selected = 0;
+      currentCol--;
     }
-    if (ch == KEY_RIGHT){
-
+    if (ch == KEY_RIGHT && currentCol < numCols - 1){
+      gameboard->cells[currentRow][currentCol]->selected = 0;
+      currentCol++;
     }
+    gameboard->cells[currentRow][currentCol]->selected = 1;
+
+    board_draw(gameboard);
+    ch = getch();
 
   }
 

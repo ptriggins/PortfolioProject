@@ -8,7 +8,7 @@ void cell_init(CELL* self, char type[3]){
 
   strcpy(self->type, type);
 
-  if (strcmp(type, "  ") == 0){
+  if (strcmp(type, "") == 0){
     self->letterMultiplier = 0;
     self->wordMultiplier = 0;
     self->color = YELLOW;
@@ -67,6 +67,6 @@ void cell_get_type(char type[3], int yDistance, int xDistance){
   else if ((yDistance == 1 && xDistance % 4 == 1) || (xDistance == 1 && yDistance % 4 == 1))
     strcpy(type, "DL");
   else
-    strcpy(type, "  ");
+    strcpy(type, "");
 
 }
