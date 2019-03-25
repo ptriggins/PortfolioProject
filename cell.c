@@ -17,7 +17,6 @@ void cell_init(CELL* self, char type[3]){
     self->letterMultiplier = 0;
     self->wordMultiplier = 2;
     self->color = MAGENTA;
-    self->selected = 1;
   }
   else if (strcmp(type, "DL") == 0){
     self->letterMultiplier = 2;

@@ -4,9 +4,11 @@
 #include <ncurses.h>
 #include "cell.h"
 
+#define MARGIN_WIDTH 3
+
 typedef struct BOARD{
 
-  int y, x;
+  int startRow, startCol;
   int numRows, numCols;
   int topVisibleRow, bottomVisibleRow, leftVisibleCol, rightVisibleCol;
   CELL*** cells;
@@ -15,5 +17,4 @@ typedef struct BOARD{
 }BOARD;
 
 BOARD* board_create(int numRows, int numCols, int screenRows, int screenCols);
-void board_change_selected_cell(BOARD* board, int event);
 void board_draw(BOARD* self);

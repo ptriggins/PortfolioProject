@@ -1,89 +1,167 @@
 #include <stdio.h>
 #include <ncurses.h>
 #include "board.h"
+#include "hand.h"
+#include "cursor.h"
 
-#define MARGIN_WIDTH 3
+#define GAMEBOARD 0
+#define HAND1 1
+#define HAND2 2
 
 int main(int argc, char* argv[]){
 
-  // Initializes drawing with ncurses
   initscr();
   start_color();
   //noecho();
 
-  // Enables getting input from the keyboard
+  init_pair(1, COLOR_WHITE, COLOR_YELLOW);
+  init_pair(2, COLOR_WHITE, COLOR_MAGENTA);
+  init_pair(3, COLOR_WHITE, COLOR_CYAN);
+  init_pair(4, COLOR_WHITE, COLOR_BLUE);
+  init_pair(5, COLOR_WHITE, COLOR_RED);
+  init_pair(6, COLOR_BLACK, COLOR_WHITE);
+
   keypad(stdscr, TRUE);
-  cbreak();
   //nodelay(stdscr, TRUE);
+  cbreak();
 
   refresh();
 
-  // Gets the number of rows and cols of the gameboard and calculates coordinates such that the gameboard is center
   int numRows = atoi(argv[1]);
   int numCols = atoi(argv[2]);
 
   int screenRows = LINES / CELL_HEIGHT;
   int screenCols = COLS / CELL_WIDTH;
 
-  BOARD* gameboard = board_create(numRows, numCols, screenRows, screenCols - 2 * MARGIN_WIDTH);
-  int currentRow = numRows / 2;
-  int currentCol = numCols / 2;
+  BOARD* gameboard = board_create(numRows, numCols, screenRows, screenCols);
+
+  TILEBAG* tilebag = bag_create();
+  HAND* hand = hand_create(gameboard->startRow, gameboard->startCol - MARGIN_WIDTH, tilebag);
+
+  CURSOR* cursor = cursor_create(screenRows, screenCols, GAMEBOARD);
+  gameboard->cells[numRows / 2][numCols / 2]->selected = 1;
 
   board_draw(gameboard);
+  hand_draw(hand);
 
   while (1){
 
     int ch = getch();
+
     int currentCenterRow = gameboard->topVisibleRow + (screenRows / 2);
     int currentCenterCol = gameboard->leftVisibleCol + ((screenCols / 2) - MARGIN_WIDTH);
 
-    if (ch == KEY_UP && currentRow > 0){
+    if (cursor->location == GAMEBOARD){
 
-      if (gameboard->topVisibleRow > 0 && currentRow == currentCenterRow){
-        gameboard->topVisibleRow--;
-        gameboard->bottomVisibleRow--;
+      int cellRow, cellCol;
+      if (numRows <= screenRows)
+        cellRow = cursor->row - gameboard->startRow;
+      else
+        cellRow = cursor->row + gameboard->topVisibleRow;
+      if (numCols <= screenCols - (2 * MARGIN_WIDTH))
+        cellCol = cursor->col - gameboard->startCol ;
+      else
+        cellCol = cursor->col + gameboard->leftVisibleCol - 3;
+
+      if (ch == KEY_UP && cellRow > 0){
+
+        gameboard->cells[cellRow][cellCol]->selected = 0;
+        gameboard->cells[cellRow - 1][cellCol]->selected = 1;
+
+        if (gameboard->topVisibleRow > 0 && cellRow == currentCenterRow){
+          gameboard->topVisibleRow--;
+          gameboard->bottomVisibleRow--;
+        }
+        else
+          cursor->row--;
+
+      }
+      else if (ch == KEY_DOWN && cellRow < numRows - 1){
+
+        gameboard->cells[cellRow][cellCol]->selected = 0;
+        gameboard->cells[cellRow + 1][cellCol]->selected = 1;
+
+        if (gameboard->bottomVisibleRow < numRows - 1 && cellRow == currentCenterRow){
+          gameboard->topVisibleRow++;
+          gameboard->bottomVisibleRow++;
+        }
+        else
+          cursor->row++;
+
+      }
+      else if (ch == KEY_LEFT){
+
+        if (cellCol == 0){
+
+          gameboard->cells[cellRow][cellCol]->selected = 0;
+          cursor->row = hand->startRow + 6;
+          cursor->col = hand->startCol + 1;
+          hand->tiles[3]->selected = 1;
+          cursor->location = HAND1;
+
+        }
+        else if(cellCol > 0){
+
+          gameboard->cells[cellRow][cellCol]->selected = 0;
+          gameboard->cells[cellRow][cellCol - 1]->selected = 1;
+
+          if (gameboard->leftVisibleCol > 0 && cellCol == currentCenterCol){
+            gameboard->leftVisibleCol--;
+            gameboard->rightVisibleCol--;
+          }
+          else
+            cursor->col--;
+
+        }
+
+      }
+      else if (ch == KEY_RIGHT && cellCol < numCols - 1){
+
+        gameboard->cells[cellRow][cellCol]->selected = 0;
+        gameboard->cells[cellRow][cellCol + 1]->selected = 1;
+
+        if (gameboard->rightVisibleCol < numCols - 1 && cellCol == currentCenterCol){
+          gameboard->leftVisibleCol++;
+          gameboard->rightVisibleCol++;
+        }
+        else
+          cursor->col++;
+
       }
 
-      gameboard->cells[currentRow][currentCol]->selected = 0;
-      currentRow--;
-
     }
-    if (ch == KEY_DOWN && currentRow < numRows - 1){
+    else if (cursor->location == HAND1){
 
-      if (gameboard->bottomVisibleRow < numRows - 1 && currentRow == currentCenterRow){
-        gameboard->topVisibleRow++;
-        gameboard->bottomVisibleRow++;
+      int tileIndex = (cursor->row - hand->startRow) / 2;
+
+      if (ch == KEY_UP && tileIndex > 0){
+
+        hand->tiles[tileIndex]->selected = 0;
+        hand->tiles[tileIndex - 1]->selected = 1;
+        cursor->row -= 2;
+
+      }
+      else if (ch == KEY_DOWN && tileIndex < TILES_PER_HAND - 1){
+
+        hand->tiles[tileIndex]->selected = 0;
+        hand->tiles[tileIndex + 1]->selected = 1;
+        cursor->row += 2;
+
+      }
+      else if (ch == KEY_RIGHT){
+
+        hand->tiles[tileIndex]->selected = 0;
+        cursor->row = currentCenterRow;
+        cursor->col = gameboard->startCol;
+        gameboard->cells[numRows / 2][0]->selected = 1;
+        cursor->location = GAMEBOARD;
+
       }
 
-      gameboard->cells[currentRow][currentCol]->selected = 0;
-      currentRow++;
-
     }
-    if (ch == KEY_LEFT && currentCol > 0){
-
-      if (gameboard->leftVisibleCol > 0 && currentCol == currentCenterCol){
-        gameboard->leftVisibleCol--;
-        gameboard->rightVisibleCol--;
-      }
-
-      gameboard->cells[currentRow][currentCol]->selected = 0;
-      currentCol--;
-
-    }
-    if (ch == KEY_RIGHT && currentCol < numCols - 1){
-
-      if (gameboard->rightVisibleCol < numCols - 1 && currentCol == currentCenterCol){
-        gameboard->leftVisibleCol++;
-        gameboard->rightVisibleCol++;
-      }
-
-      gameboard->cells[currentRow][currentCol]->selected = 0;
-      currentCol++;
-
-    }
-    gameboard->cells[currentRow][currentCol]->selected = 1;
 
     board_draw(gameboard);
+    hand_draw(hand);
 
   }
 

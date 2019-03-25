@@ -4,38 +4,32 @@
 void board_init(BOARD* self, int numRows, int numCols, int screenRows, int screenCols){
 
   if (numRows <= screenRows)
-    self->y = ((screenRows / 2) - (numRows / 2)) * CELL_HEIGHT;
+    self->startRow = ((screenRows / 2) - (numRows / 2));
   else
-    self->y = 0;
+    self->startRow = 0;
 
-  if(numCols <= screenCols)
-    self->x = ((screenCols / 2) - (numCols / 2)) * CELL_WIDTH;
+  if(numCols <= screenCols - (2 * MARGIN_WIDTH))
+    self->startCol = ((screenCols / 2) - (numCols / 2));
   else
-    self->x = 3 * CELL_WIDTH;
+    self->startCol = MARGIN_WIDTH;
 
   self->numRows = numRows;
   self->numCols = numCols;
 
-  // Variables relating to a cell's attributes
   int cellRow, cellCol;
   char type[3];
 
-  // Calculates coordinates such that the loop centers around 0, 0
   int topY = -numRows / 2;
   int topX = -numCols / 2;
 
-  // Creates each cell in the gameboard
   for(int i = topY; i < topY + numRows; i++){
     for(int j = topX; j < topX + numCols; j++){
 
-      // Calculates the row and column a cell falls in
       cellRow = i + numRows / 2;
       cellCol = j + numCols / 2;
 
-      // Gets a cell's type based on its distance from row 0 and column 0
       cell_get_type(type, abs(i), abs(j));
 
-      // Creates the cell of previously determined type at a given row and column
       self->cells[cellRow][cellCol] = cell_create(type);
 
     }
@@ -46,20 +40,20 @@ void board_init(BOARD* self, int numRows, int numCols, int screenRows, int scree
     self->bottomVisibleRow = numRows - 1;
   }
   else{
-    self->topVisibleRow = ((numRows - screenRows) / 2);
+    self->topVisibleRow = (numRows - screenRows) / 2;
     self->bottomVisibleRow = (numRows - self->topVisibleRow) - 1;
   }
 
-  if (numCols <= screenCols){
+  if (numCols <= screenCols - (2 * MARGIN_WIDTH)){
     self->leftVisibleCol = 0;
     self->rightVisibleCol = numCols - 1;
   }
   else{
-    self->leftVisibleCol = ((numCols - screenCols) / 2);
+    self->leftVisibleCol = (numCols - (screenCols - (2 * MARGIN_WIDTH))) / 2;
     self->rightVisibleCol = (numCols - self->leftVisibleCol) - 2;
   }
 
-  self->window = newwin(screenRows * CELL_HEIGHT, screenCols * CELL_WIDTH, self->y, self->x);
+  self->window = newwin(screenRows * CELL_HEIGHT, (screenCols - MARGIN_WIDTH) * CELL_WIDTH, self->startRow * CELL_HEIGHT, self->startCol * CELL_WIDTH);
 
 }
 
@@ -80,13 +74,6 @@ BOARD* board_create(int numRows, int numCols, int screenRows, int screenCols){
 }
 
 void board_draw(BOARD* self){
-
-  // Defines background a foreground combinations for each cell type in the board
-  init_pair(1, COLOR_WHITE, COLOR_YELLOW);
-  init_pair(2, COLOR_WHITE, COLOR_MAGENTA);
-  init_pair(3, COLOR_WHITE, COLOR_CYAN);
-  init_pair(4, COLOR_WHITE, COLOR_BLUE);
-  init_pair(5, COLOR_WHITE, COLOR_RED);
 
   int y = 0, x = 0;
 
