@@ -1,6 +1,5 @@
 #include "cell.h"
 
-// Initializes a cells attributes based on a given type
 void cell_init(CELL* self, char type[3]){
 
   self->selected = 0;
@@ -39,6 +38,8 @@ void cell_init(CELL* self, char type[3]){
     self->color = RED;
   }
 
+  self->tile = NULL;
+
 }
 
 CELL* cell_create(char type[3]){
@@ -67,5 +68,32 @@ void cell_get_type(char type[3], int yDistance, int xDistance){
     strcpy(type, "DL");
   else
     strcpy(type, "");
+
+}
+
+void cell_draw(WINDOW* win, int y, int x, CELL* self){
+
+  if (self->tile != NULL)
+    tile_draw(win, y, x, self->tile);
+  else{
+
+    wattron(win, A_BOLD);
+    wattron(win, COLOR_PAIR(self->color));
+
+    mvwprintw(win, y, x, "     ");
+    mvwprintw(win, y + 1, x, "     ");
+    mvwprintw(win, y + 2, x, "     ");
+
+    if (self->selected == 1){
+      mvwaddch(win, y, x, ACS_ULCORNER);
+      mvwaddch(win, y, x + 4, ACS_URCORNER);
+      mvwaddch(win, y + 2, x, ACS_LLCORNER);
+      mvwaddch(win, y + 2, x + 4, ACS_LRCORNER);
+    }
+
+    mvwprintw(win, y, x, "%s", self->type);
+
+  }
+
 
 }

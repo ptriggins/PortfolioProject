@@ -80,21 +80,7 @@ void board_draw(BOARD* self){
   for (int i = self->topVisibleRow; i <= self->bottomVisibleRow; i++){
     for (int j = self->leftVisibleCol; j <= self->rightVisibleCol; j++){
 
-      wattron(self->window, A_BOLD);
-      wattron(self->window, COLOR_PAIR(self->cells[i][j]->color));
-
-      mvwprintw(self->window, y, x, "     ");
-      mvwprintw(self->window, y + 1, x, "     ");
-      mvwprintw(self->window, y + 2, x, "     ");
-
-      if (self->cells[i][j]->selected == 1){
-        mvwaddch(self->window, y, x, ACS_ULCORNER);
-        mvwaddch(self->window, y, x + 4, ACS_URCORNER);
-        mvwaddch(self->window, y + 2, x, ACS_LLCORNER);
-        mvwaddch(self->window, y + 2, x + 4, ACS_LRCORNER);
-      }
-
-      mvwprintw(self->window, y, x, "%s", self->cells[i][j]->type);
+      cell_draw(self->window, y, x, self->cells[i][j]);
       x += CELL_WIDTH;
 
     }
@@ -105,5 +91,4 @@ void board_draw(BOARD* self){
   }
 
   wrefresh(self->window);
-
 }
