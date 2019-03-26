@@ -20,3 +20,4 @@ typedef struct HAND{
 
 HAND* hand_create(int startRow, int startCol, TILEBAG* tilebag);
 void hand_draw(HAND* self);
+void hand_erase(HAND* self);

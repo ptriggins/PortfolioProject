@@ -35,3 +35,19 @@ void hand_draw(HAND* self){
   wrefresh(self->window);
 
 }
+
+void hand_erase(HAND* self){
+
+  wattron(self->window, COLOR_PAIR(8));
+  int y = TILE_HEIGHT, x = TILE_WIDTH;
+  for (int i = 0; i < self->numTiles; i++){
+
+    mvwprintw(self->window, y, x, "     ");
+    mvwprintw(self->window, y + 1, x, "     ");
+    mvwprintw(self->window, y + 2, x, "     ");
+    y += 2 * TILE_HEIGHT;
+
+  }
+  wrefresh(self->window);
+
+}

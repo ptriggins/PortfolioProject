@@ -23,6 +23,7 @@ int main(int argc, char* argv[]){
   init_pair(5, COLOR_WHITE, COLOR_RED);
   init_pair(6, COLOR_BLACK, COLOR_WHITE);
   init_pair(7, COLOR_WHITE, COLOR_GREEN);
+  init_pair(8, COLOR_BLACK, COLOR_BLACK);
 
   keypad(stdscr, TRUE);
   //nodelay(stdscr, TRUE);
@@ -67,13 +68,23 @@ int main(int argc, char* argv[]){
       else
         cellCol = cursor->col + gameboard->leftVisibleCol - 3;
 
+      if(ch == ENTER && gameboard->cells[cellRow][cellCol]->tile != NULL){
+
+        gameboard->cells[cellRow][cellCol]->tile->played = 1;
+        gameboard->cells[cellRow][cellCol]->tile->selected = 0;
+
+      }
       if (ch == KEY_UP && cellRow > 0){
 
         gameboard->cells[cellRow][cellCol]->selected = 0;
         gameboard->cells[cellRow - 1][cellCol]->selected = 1;
 
-        gameboard->cells[cellRow - 1][cellCol]->tile = gameboard->cells[cellRow][cellCol]->tile;
-        gameboard->cells[cellRow][cellCol]->tile = NULL;
+        if (gameboard->cells[cellRow][cellCol]->tile != NULL){
+          if(gameboard->cells[cellRow][cellCol]->tile->played == 0){
+            gameboard->cells[cellRow - 1][cellCol]->tile = gameboard->cells[cellRow][cellCol]->tile;
+            gameboard->cells[cellRow][cellCol]->tile = NULL;
+          }
+        }
 
         if (gameboard->topVisibleRow > 0 && cellRow == currentCenterRow){
           gameboard->topVisibleRow--;
@@ -88,8 +99,12 @@ int main(int argc, char* argv[]){
         gameboard->cells[cellRow][cellCol]->selected = 0;
         gameboard->cells[cellRow + 1][cellCol]->selected = 1;
 
-        gameboard->cells[cellRow + 1][cellCol]->tile = gameboard->cells[cellRow][cellCol]->tile;
-        gameboard->cells[cellRow][cellCol]->tile = NULL;
+        if (gameboard->cells[cellRow][cellCol]->tile != NULL){
+          if(gameboard->cells[cellRow][cellCol]->tile->played == 0){
+            gameboard->cells[cellRow + 1][cellCol]->tile = gameboard->cells[cellRow][cellCol]->tile;
+            gameboard->cells[cellRow][cellCol]->tile = NULL;
+          }
+        }
 
         if (gameboard->bottomVisibleRow < numRows - 1 && cellRow == currentCenterRow){
           gameboard->topVisibleRow++;
@@ -104,9 +119,9 @@ int main(int argc, char* argv[]){
         if (cellCol == 0 && gameboard->cells[cellRow][cellCol]->tile == NULL){
 
           gameboard->cells[cellRow][cellCol]->selected = 0;
-          cursor->row = hand->startRow + 6;
+          cursor->row = hand->startRow + 1;
           cursor->col = hand->startCol + 1;
-          hand->tiles[3]->selected = 1;
+          hand->tiles[0]->selected = 1;
           cursor->location = HAND1;
 
         }
@@ -115,8 +130,12 @@ int main(int argc, char* argv[]){
           gameboard->cells[cellRow][cellCol]->selected = 0;
           gameboard->cells[cellRow][cellCol - 1]->selected = 1;
 
-          gameboard->cells[cellRow][cellCol - 1]->tile = gameboard->cells[cellRow][cellCol]->tile;
-          gameboard->cells[cellRow][cellCol]->tile = NULL;
+          if (gameboard->cells[cellRow][cellCol]->tile != NULL){
+            if(gameboard->cells[cellRow][cellCol]->tile->played == 0){
+              gameboard->cells[cellRow][cellCol - 1]->tile = gameboard->cells[cellRow][cellCol]->tile;
+              gameboard->cells[cellRow][cellCol]->tile = NULL;
+            }
+          }
 
           if (gameboard->leftVisibleCol > 0 && cellCol == currentCenterCol){
             gameboard->leftVisibleCol--;
@@ -133,8 +152,12 @@ int main(int argc, char* argv[]){
         gameboard->cells[cellRow][cellCol]->selected = 0;
         gameboard->cells[cellRow][cellCol + 1]->selected = 1;
 
-        gameboard->cells[cellRow][cellCol + 1]->tile = gameboard->cells[cellRow][cellCol]->tile;
-        gameboard->cells[cellRow][cellCol]->tile = NULL;
+        if (gameboard->cells[cellRow][cellCol]->tile != NULL){
+          if(gameboard->cells[cellRow][cellCol]->tile->played == 0){
+            gameboard->cells[cellRow][cellCol + 1]->tile = gameboard->cells[cellRow][cellCol]->tile;
+            gameboard->cells[cellRow][cellCol]->tile = NULL;
+          }
+        }
 
         if (gameboard->rightVisibleCol < numCols - 1 && cellCol == currentCenterCol){
           gameboard->leftVisibleCol++;
@@ -195,6 +218,16 @@ int main(int argc, char* argv[]){
           cursor->col = gameboard->startCol;
           gameboard->cells[currentCenterRow][0]->selected = 1;
           gameboard->cells[currentCenterRow][0]->tile = hand->tiles[tileIndex];
+
+          if (hand->tiles[tileIndex]->chosen == 1){
+
+            for (int i = tileIndex; i < hand->numTiles; i++){
+              hand->tiles[i] = hand->tiles[i + 1];
+            }
+            hand_erase(hand);
+            hand->numTiles--;
+
+          }
 
           cursor->location = GAMEBOARD;
 
