@@ -20,6 +20,7 @@ typedef struct CELL{
   int color;
   int selected;
   TILE* tempTile, *tile;
+  CELL* aboveCell, belowCell, leftCell, rightCell;
 
 }CELL;
 
@@ -27,3 +28,5 @@ CELL* cell_create(char type[3]);
 void cell_get_type(char type[3], int yDistance, int xDistance);
 void cell_draw(WINDOW* win, int y, int x, CELL* cell);
 void cell_play_tile(CELL* self);
+void cell_switch_selection(CELL* oldCell, CELL* newCell);
+void cell_switch_tile(CELL* oldCell, CELL* newCell);

@@ -14,6 +14,7 @@ void cell_init(CELL* self, char type[3]){
     self->letterMultiplier = 0;
     self->wordMultiplier = 2;
     self->color = MAGENTA;
+    self->selected = 1;
   }
   else if (strcmp(type, "DL") == 0){
     self->letterMultiplier = 2;
@@ -37,6 +38,7 @@ void cell_init(CELL* self, char type[3]){
   }
 
   self->tempTile = NULL, self->tile = NULL;
+  self->aboveCell = NULL, self->belowCell = NULL, self->leftCell = NULL, self->rightCell = NULL;
 
 }
 
@@ -44,12 +46,10 @@ CELL* cell_create(char type[3]){
 
   CELL* newCell = (CELL*) malloc(sizeof(CELL));
   cell_init(newCell, type);
-
   return newCell;
 
 }
 
-// Determines the type of a cell bsaed on a given x and y distance from the start cell
 void cell_get_type(char type[3], int yDistance, int xDistance){
 
   if (yDistance == 0 && xDistance == 0)
@@ -98,9 +98,16 @@ void cell_draw(WINDOW* win, int y, int x, CELL* self){
 }
 
 void cell_play_tile(CELL* self){
-
   self->tile = self->tempTile;
   self->tempTile = NULL;
-  self->tile->selected = 0;
+}
 
+void cell_switch_selection(CELL* oldCell, CELL* newCell){
+  oldCell->selected = 0;
+  newCell->selected = 1;
+}
+
+void cell_switch_tile(CELL* oldCell, CELL* newCell){
+  newTile->tempTile = oldTile->tempTile;
+  newTile->tempTile = NULL;
 }

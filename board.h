@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ncurses.h>
 #include "cell.h"
+#include "frame.h"
 
 #define MARGIN_WIDTH 3
 
@@ -12,9 +13,10 @@ typedef struct BOARD{
   int numRows, numCols;
   int topVisibleRow, bottomVisibleRow, leftVisibleCol, rightVisibleCol;
   CELL*** cells;
+  FRAME* viewframe;
   WINDOW* window;
 
 }BOARD;
 
-BOARD* board_create(int numRows, int numCols, int screenRows, int screenCols);
+BOARD* board_create(int numRows, int numCols, int availableRows, int availableCols);
 void board_draw(BOARD* self);

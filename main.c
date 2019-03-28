@@ -38,82 +38,65 @@ int main(int argc, char* argv[]){
   int numRows = atoi(argv[1]), numCols = atoi(argv[2]);
   int screenRows = LINES / CELL_HEIGHT, screenCols = COLS / CELL_WIDTH;
 
-  BOARD* gameboard = board_create(numRows, numCols, screenRows, screenCols);
+  BOARD *gameboard = board_create(numRows, numCols, screenRows, screenCols);
+  FRAME *viewframe = frame_create(numRows, numCols, screenRows, screenCols);
 
-  TILEBAG* tilebag = bag_create();
-  HAND* hand = hand_create(gameboard->startRow, gameboard->startCol - MARGIN_WIDTH, tilebag);
+  TILEBAG *tilebag = bag_create();
+  HAND *hand = hand_create(gameboard->startRow, gameboard->startCol - MARGIN_WIDTH, tilebag);
 
-  CURSOR* cursor = cursor_create(screenRows, screenCols, GAMEBOARD);
-  gameboard->cells[numRows / 2][numCols / 2]->selected = 1;
+  int location = GAMEBOARD;
 
   board_draw(gameboard);
   hand_draw(hand);
 
   int direction = 0, numTilesPlayed = 0;
-  TILE* wordHead;
+  TILE *wordHead;
+
+  int cellRow = viewframe->centerRow, cellCol = viewframe->centerCol;
+  CELL* currentCell;
+  
+  int tileIndex = 0;
 
   while (1){
 
     int ch = getch();
 
-    int currentCenterRow, currentCenterCol;
-    currentCenterRow = gameboard->bottomVisibleRow + (gameboard->topVisibleRow - gameboard->bottomVisibleRow) / 2;
-    currentCenterCol = gameboard->leftVisibleCol + (gameboard->rightVisibleCol - gameboard->leftVisibleCol) / 2;
+    TILE *currentTile;
 
-    if (cursor->location == GAMEBOARD){
+    if (location == GAMEBOARD){
 
-      int cellRow, cellCol;
-      if (gameboard->topVisibleRow == 0)
-        cellRow = cursor->row - gameboard->startRow;
-      else
-        cellRow = cursor->row + gameboard->topVisibleRow;
-      if (gameboard->leftVisibleCol == 0)
-        cellCol = cursor->col - gameboard->startCol ;
-      else
-        cellCol = cursor->col + gameboard->leftVisibleCol - 3;
-
-      CELL* currentCell = gameboard->cells[cellRow][cellCol];
+      currentCell = gameboard->cells[cellRow][cellCol];
 
       if(ch == ENTER){
 
-        if (numTilesPlayed == 0){
-
-          cell_play_tile(gameboard->cells[cellRow][cellCol]);
-          TILE* wordHead = gameboard->cells[cellRow][cellCol]->tile;
+        if (numTilesPlayed == 0) {
+          cell_play_tile(currentCell);
+          TILE* wordHead = currentCell->tile;
           numTilesPlayed++;
-
         }
         else if (numTilesPlayed == 1) {
 
-          if (gameboard->cells[cellRow - 1][cellCol]->tile != NULL){
-
+          if (aboveCell->tile != NULL) {
             direction = VERTICAL;
-            cell_play_tile(gameboard->cells[cellRow][cellCol]);
-            wordHead = gameboard->cells[cellRow][cellCol]->tile);
+            cell_play_tile(currentCell);
+            wordHead = currentCell->tile);
             numTilesPlayed++;
-
           }
-          else if(gameboard->cells[cellRow + 1][cellCol]->tile != NULL){
-
+          else if(belowCell->tile != NULL){
             direction = VERTICAL;
-            cell_play_tile(gameboard->cells[cellRow][cellCol]);
+            cell_play_tile(currentCell);
             numTilesPlayed++;
-
           }
-          else if (gameboard->cells[cellRow][cellCol - 1]->tile != NULL){
-
+          else if (leftCell->tile != NULL){
             direction = HORIZONTAL;
-            cell_play_tile(gameboard->cells[cellRow][cellCol]);
-            wordHead = gameboard->cells[cellRow][cellCol]->tile;
+            cell_play_tile(currentCell);
+            wordHead = currentCell->tile;
             numTilesPlayed++;
-
           }
-          else if (gameboard->cells[cellRow][cellCol + 1]->tile != NULL){
-
+          else if (rightCell->tile != NULL){
             direction = HORIZONTAL;
-            cell_play_tile(gameboard->cells[cellRow][cellCol]);
+            cell_play_tile(currentCell);
             numTilesPlayed++;
-
           }
 
         }
@@ -121,36 +104,27 @@ int main(int argc, char* argv[]){
 
           if (direction == VERTICAL){
 
-            if (gameboard->cells[cellRow - 1][cellCol]->tile != NULL){
-
-              cell_play_tile(gameboard->cells[cellRow][cellCol]);
-              wordHead = gameboard->cells[cellRow][cellCol]->tile;
+            if (aboveCell->tile != NULL){
+              cell_play_tile(currentCell);
+              wordHead = currentCell->tile;
               numTilesPlayed++;
-
-
             }
-            else if (gameboard->cells[cellRow + 1][cellCol]->tile != NULL)){
-
-              cell_play_tile(gameboard->cells[cellRow][cellCol]);
+            else if (belowCell->tile != NULL)){
+              cell_play_tile(currentCell);
               numTilesPlayed++;
-
             }
 
           }
           if (direction == HORIZONTAL){
 
-            if (gameboard->cells[cellRow][cellCol - 1]->tile != NULL){
-
-              cell_set_tile(gameboard->cells[cellRow][cellCol]);
-              wordHead = gameboard->cells[cellRow][cellCol]->tile;
+            if (leftCell->tile != NULL){
+              cell_set_tile(currentCell);
+              wordHead = currentCell->tile;
               numTilesPlayed++;
-
             }
-            else if (gameboard->cells[cellRow][cellCol + 1]->tile != NULL)){
-
-              cell_set_tile(gameboard->cells[cellRow][cellCol]);
+            else if (rightCell->tile != NULL)){
+              cell_set_tile(currentCell);
               numTilesPlayed++;
-
             }
 
           }
@@ -160,123 +134,90 @@ int main(int argc, char* argv[]){
       }
       if (ch == KEY_UP && cellRow > 0){
 
-        gameboard->cells[cellRow][cellCol]->selected = 0;
-        gameboard->cells[cellRow - 1][cellCol]->selected = 1;
+        cell_switch_selection(currentCell, aboveCell);
+        if (currentCell->tempTile != NULL)
+          cell_switch_tile(currentCell, aboveCell);
 
-        if (gameboard->cells[cellRow][cellCol]->tempTile != NULL){
-          gameboard->cells[cellRow - 1][cellCol]->tempTile = gameboard->cells[cellRow][cellCol]->tempTile;
-          gameboard->cells[cellRow][cellCol]->tempTile = NULL;
-        }
-
-        if (gameboard->topVisibleRow > 0 && cellRow == currentCenterRow){
-          gameboard->topVisibleRow--;
-          gameboard->bottomVisibleRow--;
-        }
-        else
-          cursor->row--;
+        if (cellRow == currentCenterRow && viewframe->centerRow > 0)
+          frame_move_up(viewframe);
+        cellRow--;
 
       }
       else if (ch == KEY_DOWN && cellRow < numRows - 1){
 
-        gameboard->cells[cellRow][cellCol]->selected = 0;
-        gameboard->cells[cellRow + 1][cellCol]->selected = 1;
+        cell_switch_selection(currentCell, belowCell);
+        if (currentCell->tempTile != NULL)
+          cell_switch_tile(currentCell, belowCell);
 
-        if (gameboard->cells[cellRow][cellCol]->tempTile != NULL){
-          gameboard->cells[cellRow + 1][cellCol]->tempTile = gameboard->cells[cellRow][cellCol]->tempTile;
-          gameboard->cells[cellRow][cellCol]->tempTile = NULL;
-        }
-
-        if (gameboard->bottomVisibleRow < numRows - 1 && cellRow == currentCenterRow){
-          gameboard->topVisibleRow++;
-          gameboard->bottomVisibleRow++;
-        }
-        else
-          cursor->row++;
+        if (cellRow == viewframe->centerRow && viewframe->bottomRow < numRows - 1 )
+          frame_move_down(viewframe)
+        cellRow++;
 
       }
       else if (ch == KEY_LEFT){
 
-        if (cellCol == 0 && hand->numTiles > 0 && gameboard->cells[cellRow][cellCol]->tempTile == NULL){
-
-          gameboard->cells[cellRow][cellCol]->selected = 0;
-          cursor->row = hand->startRow + 1;
-          cursor->col = hand->startCol + 1;
-          hand->tiles[0]->selected = 1;
-          cursor->location = HAND1;
-
+        if (cellCol == 0 && hand->numTiles > 0 && currentCell->tempTile == NULL){
+          currentCell->selected = 0;
+          tileIndex = 0;
+          currentTile->selected = 1;
+          location = HAND1;
         }
         else if(cellCol > 0){
 
-          gameboard->cells[cellRow][cellCol]->selected = 0;
-          gameboard->cells[cellRow][cellCol - 1]->selected = 1;
+          cell_switch_selection(currentCell, leftCell);
+          if (currentCell->tempTile != NULL)
+            cell_switch_tile(currentCell, leftCell);
 
-          if (gameboard->cells[cellRow][cellCol]->tempTile != NULL){
-            gameboard->cells[cellRow][cellCol - 1]->tempTile = gameboard->cells[cellRow][cellCol]->tempTile;
-            gameboard->cells[cellRow][cellCol]->tempTile = NULL;
-          }
-
-          if (gameboard->leftVisibleCol > 0 && cellCol == currentCenterCol){
-            gameboard->leftVisibleCol--;
-            gameboard->rightVisibleCol--;
-          }
-          else
-            cursor->col--;
+          if (cellCol == viewframe->centerCol && viewframe->leftCol > 0)
+            frame_move_left(viewframe);
+          cellCol--;
 
         }
 
       }
       else if (ch == KEY_RIGHT && cellCol < numCols - 1){
 
-        gameboard->cells[cellRow][cellCol]->selected = 0;
-        gameboard->cells[cellRow][cellCol + 1]->selected = 1;
+        cell_switch_selection(currentCell, rightCell);
+        if (currentCell->tempTile != NULL)
+          cell_switch_tile(currentCell, rightCell);
 
-        if (gameboard->cells[cellRow][cellCol]->tempTile != NULL){
-          gameboard->cells[cellRow][cellCol + 1]->tempTile = gameboard->cells[cellRow][cellCol]->tempTile;
-          gameboard->cells[cellRow][cellCol]->tempTile = NULL;
-        }
-
-        if (gameboard->rightVisibleCol < numCols - 1 && cellCol == currentCenterCol){
-          gameboard->leftVisibleCol++;
-          gameboard->rightVisibleCol++;
-        }
-        else
-          cursor->col++;
+        if (cellCol == viewframe->centerCol && viewframe->rightCol < numCols - 1)
+          frame_move_right(viewframe);
+        cursor->col++;
 
       }
 
     }
-    else if (cursor->location == HAND1){
+    else if (location == HAND1){
 
-      int tileIndex = (cursor->row - hand->startRow) / 2;
+      currentTile = hand->tiles[tileIndex];
+      nextTile = hand->tiles[tileIndex + 1]
 
-      if (hand->tiles[tileIndex]->chosen == 0){
+      if (currentTile->chosen == 0){
 
         if (ch == ENTER){
-            hand->tiles[tileIndex]->chosen = 1;
+            currentTile->selected = 0;
+            currentTile->chosen = 1;
         }
         else if (ch == KEY_UP && tileIndex > 0){
 
-          hand->tiles[tileIndex]->selected = 0;
+          currentTile->selected = 0;
           hand->tiles[tileIndex - 1]->selected = 1;
           cursor->row -= 2;
 
         }
         else if (ch == KEY_DOWN && tileIndex < TILES_PER_HAND - 1){
 
-          hand->tiles[tileIndex]->selected = 0;
+          currentTile->selected = 0;
           hand->tiles[tileIndex + 1]->selected = 1;
           cursor->row += 2;
 
         }
         else if (ch == KEY_RIGHT){
 
-          hand->tiles[tileIndex]->selected = 0;
-
-          cursor->row = screenRows / 2;
-          cursor->col = gameboard->startCol;
-          gameboard->cells[currentCenterRow][0]->selected = 1;
-
-          cursor->location = GAMEBOARD;
+          currentTile->selected = 0;
+          currentCell->selected = 1;
+          location = GAMEBOARD;
 
         }
 
@@ -284,18 +225,18 @@ int main(int argc, char* argv[]){
       else{
 
         if (ch == ENTER){
-            hand->tiles[tileIndex]->chosen = 0;
+            currentTile->chosen = 0;
         }
         else if (ch == KEY_RIGHT){
 
-          hand->tiles[tileIndex]->selected = 0;
+          currentTile->selected = 0;
 
           cursor->row = screenRows / 2;
           cursor->col = gameboard->startCol;
           gameboard->cells[currentCenterRow][0]->selected = 1;
-          gameboard->cells[currentCenterRow][0]->tempTile = hand->tiles[tileIndex];
+          gameboard->cells[currentCenterRow][0]->tempTile = currentTile;
 
-          if (hand->tiles[tileIndex]->chosen == 1){
+          if (currentTile->chosen == 1){
 
             for (int i = tileIndex; i < hand->numTiles; i++){
               hand->tiles[i] = hand->tiles[i + 1];

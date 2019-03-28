@@ -1,15 +1,15 @@
 #include "board.h"
 
 // Initializes all of a board's attributes
-void board_init(BOARD* self, int numRows, int numCols, int screenRows, int screenCols){
+void board_init(BOARD* self, int numRows, int numCols, int availableRows, int availableCols){
 
-  if (numRows <= screenRows)
-    self->startRow = ((screenRows / 2) - (numRows / 2));
+  if (numRows <= availableRows)
+    self->startRow = ((availableRows / 2) - (numRows / 2));
   else
     self->startRow = 0;
 
-  if(numCols <= screenCols - (2 * MARGIN_WIDTH))
-    self->startCol = ((screenCols / 2) - (numCols / 2));
+  if(numCols <= availableCols)
+    self->startCol = ((availableCols / 2) - (numCols / 2));
   else
     self->startCol = MARGIN_WIDTH;
 
@@ -35,30 +35,28 @@ void board_init(BOARD* self, int numRows, int numCols, int screenRows, int scree
     }
   }
 
-  if (numRows <= screenRows){
-    self->topVisibleRow = 0;
-    self->bottomVisibleRow = numRows - 1;
-  }
-  else{
-    self->topVisibleRow = (numRows - screenRows) / 2;
-    self->bottomVisibleRow = (numRows - self->topVisibleRow) - 1;
+  for (int i = 0; i < numRows; i++) {
+    for (int j = 0; j < numCols; j++) {
+
+      if (i != 0)
+        self->cells[i][j]->aboveCell = self->cells[i - 1][j];
+      if (i != numRows - 1)
+        self->cells[i][j]->belowCell = self->cells[i + 1][j];
+      if (j != 0)
+        self->cells[i][j]->leftCell = self->cells[i][j - 1];
+      if (j != numCols - 1)
+        self->cells[i][j]->rightCell = self->cells[i][j + 1];
+
+    }
   }
 
-  if (numCols <= screenCols - (2 * MARGIN_WIDTH)){
-    self->leftVisibleCol = 0;
-    self->rightVisibleCol = numCols - 1;
-  }
-  else{
-    self->leftVisibleCol = (numCols - (screenCols - (2 * MARGIN_WIDTH))) / 2;
-    self->rightVisibleCol = (numCols - self->leftVisibleCol) - 2;
-  }
-
-  self->window = newwin(screenRows * CELL_HEIGHT, (screenCols - MARGIN_WIDTH) * CELL_WIDTH, self->startRow * CELL_HEIGHT, self->startCol * CELL_WIDTH);
+  self->viewframe = create_frame(numRows, numCols, availableRows, availableCols);
+  self->window = newwin(availableRows * CELL_HEIGHT, availableCols * CELL_WIDTH, self->startRow * CELL_HEIGHT, self->startCol * CELL_WIDTH);
 
 }
 
 // Allocates memory for a board with variable rows and columns
-BOARD* board_create(int numRows, int numCols, int screenRows, int screenCols){
+BOARD* board_create(int numRows, int numCols, int availableRows, int availableCols){
 
   BOARD* newBoard = (BOARD*) malloc(sizeof(BOARD));
 
@@ -68,7 +66,7 @@ BOARD* board_create(int numRows, int numCols, int screenRows, int screenCols){
     newBoard->cells[i] = (CELL**) malloc(numCols * sizeof(CELL*));
   }
 
-  board_init(newBoard, numRows, numCols, screenRows, screenCols);
+  board_init(newBoard, numRows, numCols, availableRows, availableCols);
   return newBoard;
 
 }
