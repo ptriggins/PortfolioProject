@@ -58,8 +58,6 @@ void bag_init(TILEBAG* self){
       self->tiles[i] = tile_create('Y');
     else if (i < 98)
       self->tiles[i] = tile_create('Z');
-    else if (i < 100)
-      self->tiles[i] = tile_create('_');
 
   }
 

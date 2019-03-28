@@ -3,8 +3,6 @@
 void cell_init(CELL* self, char type[3]){
 
   self->selected = 0;
-  self->occupied = 0;
-
   strcpy(self->type, type);
 
   if (strcmp(type, "") == 0){
@@ -38,7 +36,7 @@ void cell_init(CELL* self, char type[3]){
     self->color = RED;
   }
 
-  self->tile = NULL;
+  self->tempTile = NULL, self->tile = NULL;
 
 }
 
@@ -73,7 +71,9 @@ void cell_get_type(char type[3], int yDistance, int xDistance){
 
 void cell_draw(WINDOW* win, int y, int x, CELL* self){
 
-  if (self->tile != NULL)
+  if (self->tempTile != NULL)
+    tile_draw(win, y, x, self->tempTile);
+  else if(self->tile != NULL)
     tile_draw(win, y, x, self->tile);
   else{
 
@@ -95,5 +95,12 @@ void cell_draw(WINDOW* win, int y, int x, CELL* self){
 
   }
 
+}
+
+void cell_play_tile(CELL* self){
+
+  self->tile = self->tempTile;
+  self->tempTile = NULL;
+  self->tile->selected = 0;
 
 }

@@ -18,11 +18,12 @@ typedef struct CELL{
   char type[3];
   int letterMultiplier, wordMultiplier;
   int color;
-  int selected, occupied;
-  TILE* tile;
+  int selected;
+  TILE* tempTile, *tile;
 
 }CELL;
 
 CELL* cell_create(char type[3]);
 void cell_get_type(char type[3], int yDistance, int xDistance);
 void cell_draw(WINDOW* win, int y, int x, CELL* cell);
+void cell_play_tile(CELL* self);

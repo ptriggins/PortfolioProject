@@ -60,7 +60,7 @@ void tile_init(TILE* self, char letter){
 
   self->selected = 0;
   self->chosen = 0;
-  self->played = 0;
+  self->next = NULL;
 
 }
 

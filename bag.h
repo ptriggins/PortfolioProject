@@ -5,7 +5,7 @@
 #include <ncurses.h>
 #include "tile.h"
 
-#define TILES_PER_BAG 100
+#define TILES_PER_BAG 98
 
 typedef struct TILEBAG{
 

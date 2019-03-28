@@ -13,7 +13,8 @@ typedef struct TILE{
 
   char letter;
   int letterValue;
-  int selected, chosen, played;
+  int selected, chosen;
+  TILE* next;
 
 }TILE;
 
