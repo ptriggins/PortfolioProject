@@ -2,6 +2,7 @@
 #include <ncurses.h>
 #include "board.h"
 #include "hand.h"
+#include "dictionary.c"
 
 #define GAMEBOARD 0
 #define HAND1 1
@@ -42,6 +43,8 @@ int main(int argc, char* argv[]){
 
   TILEBAG *tilebag = bag_create();
   HAND *hand = hand_create(gameboard->startRow, gameboard->startCol - MARGIN_WIDTH, tilebag);
+  NODE* dictionary = dictionary_create("dictionary.txt", 276643);
+  printf("%d\n", dictionary_search("BREAKFAST", dictionary));
 
   int location = GAMEBOARD;
 
@@ -142,7 +145,7 @@ int main(int argc, char* argv[]){
                   numTilesPlayed++;
                 }
               }
-              if (cellCol < numCols - 1){
+              if (cellCol < numCols - 1) {
                 if (currentCell->rightCell->tile != NULL) {
                   cell_play_tile(currentCell);
                   currentCell->tile->next = wordHead;
@@ -158,19 +161,13 @@ int main(int argc, char* argv[]){
         }
         else {
 
-          while(wordHead != NULL){
-            printw("%c", wordHead->letter);
-            wordHead = wordHead->next;
-          }
-
-          /*
           char word[numTilesPlayed + 1];
           for (int i = 0; i < numTilesPlayed; i++) {
             word[i] = wordHead->letter;
             wordHead = wordHead->next;
           }
           word[numTilesPlayed] = '\0';
-          */
+          printw("%s", word);
 
         }
 
