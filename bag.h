@@ -14,5 +14,5 @@ typedef struct TILEBAG{
 
 }TILEBAG;
 
-TILEBAG* bag_create();
+TILEBAG* bag_create(char* settingsFile);
 TILE* bag_draw_tile(TILEBAG* self);

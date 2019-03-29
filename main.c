@@ -41,10 +41,9 @@ int main(int argc, char* argv[]){
   BOARD *gameboard = board_create(numRows, numCols, screenRows, screenCols - (2 * MARGIN_WIDTH));
   FRAME *viewframe = gameboard->viewframe;
 
-  TILEBAG *tilebag = bag_create();
+  TILEBAG *tilebag = bag_create("alphabet.txt");
   HAND *hand = hand_create(gameboard->startRow, gameboard->startCol - MARGIN_WIDTH, tilebag);
   NODE* dictionary = dictionary_create("dictionary.txt", 276643);
-  printf("%d\n", dictionary_search("BREAKFAST", dictionary));
 
   int location = GAMEBOARD;
 
@@ -70,7 +69,7 @@ int main(int argc, char* argv[]){
 
       if(ch == ENTER) {
 
-        if (currentCell->tile == NULL){
+        if (currentCell->tempTile != NULL){
 
           if (numTilesPlayed == 0) {
             cell_play_tile(currentCell);
@@ -113,9 +112,9 @@ int main(int argc, char* argv[]){
                 numTilesPlayed++;
               }
             }
-
+            
           }
-          else {
+          else if (numTilesPlayed > 1){
 
             if (direction == VERTICAL) {
 
@@ -167,12 +166,17 @@ int main(int argc, char* argv[]){
             wordHead = wordHead->next;
           }
           word[numTilesPlayed] = '\0';
-          printw("%s", word);
+
+          if (dictionary_search(word, dictionary) == 1){
+            printw("Valid Word");
+          }
+          else
+            printw("Invalid Word");
 
         }
 
       }
-      if (ch == KEY_UP && cellRow > 0){
+      else if (ch == KEY_UP && cellRow > 0){
 
         cell_switch_selection(currentCell, currentCell->aboveCell);
         if (currentCell->tempTile != NULL)

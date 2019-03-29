@@ -12,13 +12,13 @@
 typedef struct TILE{
 
   char letter;
-  int letterValue;
-  int selected, chosen;
+  int score;
+  int selected, chosen, played;
   struct TILE *next;
 
 }TILE;
 
-TILE* tile_create(char letter);
+TILE* tile_create(char letter, int score);
 void tile_draw(WINDOW* win, int y, int x, TILE* self);
 
 #endif
