@@ -12,22 +12,22 @@ void frame_init(FRAME* self, int numRows, int numCols, int availableRows, int av
   }
 
   if (numCols <= availableCols){
-    self->leftRow = 0;
-    self->rightRow = numCols - 1;
+    self->leftCol = 0;
+    self->rightCol = numCols - 1;
   }
   else{
-    self->leftRow = (numCols - availableCols) / 2;
-    self->rightRow = numCols - self->leftRow - 2;
+    self->leftCol = (numCols - availableCols) / 2;
+    self->rightCol = numCols - self->leftCol - 2;
   }
 
-  self->centerRow = self->topRow + (self->bottomRow - self->topRow) / 2;
-  self->centerCol = self->leftCol + (self->leftCol - self->rightCol) / 2;
+  self->centerRow = numRows / 2;
+  self->centerCol = numCols / 2;
 
 }
 
-FRAME* frame_create(int numRows, int numCols, int availableRows, int availableCols){
+FRAME *frame_create(int numRows, int numCols, int availableRows, int availableCols){
 
-  FRAME* newFrame = (FRAME*) malloc(sizeof(FRAME));
+  FRAME *newFrame = (FRAME*) malloc(sizeof(FRAME));
   frame_init(newFrame, numRows, numCols, availableRows, availableCols);
   return newFrame;
 
@@ -36,27 +36,23 @@ FRAME* frame_create(int numRows, int numCols, int availableRows, int availableCo
 void frame_move_up(FRAME*self){
   self->topRow--;
   self->bottomRow--;
-  self->centerRow = self->topRow + (self->bottomRow - self->topRow) / 2;
-  self->centerCol = self->leftCol + (self->leftCol - self->rightCol) / 2;
+  self->centerRow--;
 }
 
 void frame_move_down(FRAME*self){
   self->topRow++;
   self->bottomRow++;
-  self->centerRow = self->topRow + (self->bottomRow - self->topRow) / 2;
-  self->centerCol = self->leftCol + (self->leftCol - self->rightCol) / 2;
+  self->centerRow++;
 }
 
 void frame_move_left(FRAME*self){
   self->leftCol--;
   self->rightCol--;
-  self->centerRow = self->topRow + (self->bottomRow - self->topRow) / 2;
-  self->centerCol = self->leftCol + (self->leftCol - self->rightCol) / 2;
+  self->centerCol--;
 }
 
 void frame_move_right(FRAME*self){
   self->leftCol++;
   self->rightCol++;
-  self->centerRow = self->topRow + (self->bottomRow - self->topRow) / 2;
-  self->centerCol = self->leftCol + (self->leftCol - self->rightCol) / 2;
+  self->centerCol++;
 }

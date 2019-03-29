@@ -108,6 +108,6 @@ void cell_switch_selection(CELL* oldCell, CELL* newCell){
 }
 
 void cell_switch_tile(CELL* oldCell, CELL* newCell){
-  newTile->tempTile = oldTile->tempTile;
-  newTile->tempTile = NULL;
+  newCell->tempTile = oldCell->tempTile;
+  oldCell->tempTile = NULL;
 }

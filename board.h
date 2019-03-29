@@ -12,11 +12,11 @@ typedef struct BOARD{
   int startRow, startCol;
   int numRows, numCols;
   int topVisibleRow, bottomVisibleRow, leftVisibleCol, rightVisibleCol;
-  CELL*** cells;
-  FRAME* viewframe;
-  WINDOW* window;
+  CELL ***cells;
+  FRAME *viewframe;
+  WINDOW *window;
 
 }BOARD;
 
-BOARD* board_create(int numRows, int numCols, int availableRows, int availableCols);
+BOARD *board_create(int numRows, int numCols, int availableRows, int availableCols);
 void board_draw(BOARD* self);

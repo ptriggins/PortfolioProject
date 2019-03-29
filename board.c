@@ -50,7 +50,7 @@ void board_init(BOARD* self, int numRows, int numCols, int availableRows, int av
     }
   }
 
-  self->viewframe = create_frame(numRows, numCols, availableRows, availableCols);
+  self->viewframe = frame_create(numRows, numCols, availableRows, availableCols);
   self->window = newwin(availableRows * CELL_HEIGHT, availableCols * CELL_WIDTH, self->startRow * CELL_HEIGHT, self->startCol * CELL_WIDTH);
 
 }
@@ -75,8 +75,8 @@ void board_draw(BOARD* self){
 
   int y = 0, x = 0;
 
-  for (int i = self->topVisibleRow; i <= self->bottomVisibleRow; i++){
-    for (int j = self->leftVisibleCol; j <= self->rightVisibleCol; j++){
+  for (int i = self->viewframe->topRow; i <= self->viewframe->bottomRow; i++){
+    for (int j = self->viewframe->leftCol; j <= self->viewframe->rightCol; j++){
 
       cell_draw(self->window, y, x, self->cells[i][j]);
       x += CELL_WIDTH;

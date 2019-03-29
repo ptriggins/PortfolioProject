@@ -20,7 +20,7 @@ typedef struct CELL{
   int color;
   int selected;
   TILE* tempTile, *tile;
-  CELL* aboveCell, belowCell, leftCell, rightCell;
+  struct CELL *aboveCell, *belowCell, *leftCell, *rightCell;
 
 }CELL;
 

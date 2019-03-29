@@ -14,7 +14,7 @@ typedef struct TILE{
   char letter;
   int letterValue;
   int selected, chosen;
-  TILE* next;
+  struct TILE *next;
 
 }TILE;
 
