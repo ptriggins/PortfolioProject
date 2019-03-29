@@ -61,87 +61,116 @@ int main(int argc, char* argv[]){
 
     int ch = getch();
 
-    if (location == GAMEBOARD){
+    if (location == GAMEBOARD) {
 
       currentCell = gameboard->cells[cellRow][cellCol];
 
-      if(ch == ENTER){
+      if(ch == ENTER) {
 
-        if (numTilesPlayed == 0) {
-          cell_play_tile(currentCell);
-          TILE* wordHead = currentCell->tile;
-          numTilesPlayed++;
-        }
-        else if (numTilesPlayed == 1) {
+        if (currentCell->tile == NULL){
 
-          if (cellRow > 0) {
-            if (currentCell->aboveCell->tile != NULL) {
-              direction = VERTICAL;
-              cell_play_tile(currentCell);
-              wordHead = currentCell->tile;
-              numTilesPlayed++;
-            }
+          if (numTilesPlayed == 0) {
+            cell_play_tile(currentCell);
+            wordHead = currentCell->tile;
+            numTilesPlayed++;
           }
-          if (cellRow < numRows - 1) {
-            if(currentCell->belowCell->tile != NULL) {
-              direction = VERTICAL;
-              cell_play_tile(currentCell);
-              numTilesPlayed++;
-            }
-          }
-          if (cellCol > 0) {
-            if (currentCell->leftCell->tile != NULL) {
-              direction = HORIZONTAL;
-              cell_play_tile(currentCell);
-              wordHead = currentCell->tile;
-              numTilesPlayed++;
-            }
-          }
-          if (cellCol < numCols - 1) {
-            if (currentCell->rightCell->tile != NULL) {
-              direction = HORIZONTAL;
-              cell_play_tile(currentCell);
-              numTilesPlayed++;
-            }
-          }
-
-        }
-        else{
-
-          if (direction == VERTICAL) {
+          else if (numTilesPlayed == 1) {
 
             if (cellRow > 0) {
-              if (currentCell->aboveCell->tile != NULL){
+              if (currentCell->aboveCell->tile != NULL) {
+                direction = VERTICAL;
                 cell_play_tile(currentCell);
+                currentCell->aboveCell->tile->next = currentCell->tile;
+                numTilesPlayed++;
+              }
+            }
+            if (cellRow < numRows - 1) {
+              if(currentCell->belowCell->tile != NULL) {
+                direction = VERTICAL;
+                cell_play_tile(currentCell);
+                currentCell->tile->next = wordHead;
                 wordHead = currentCell->tile;
                 numTilesPlayed++;
               }
             }
-            if (cellRow < numRows - 1){
-              if (currentCell->belowCell->tile != NULL){
-                cell_play_tile(currentCell);
-                numTilesPlayed++;
-              }
-            }
-
-          }
-          if (direction == HORIZONTAL){
-
             if (cellCol > 0) {
-              if (currentCell->leftCell->tile != NULL){
+              if (currentCell->leftCell->tile != NULL) {
+                direction = HORIZONTAL;
                 cell_play_tile(currentCell);
-                wordHead = currentCell->tile;
+                currentCell->leftCell->tile->next = currentCell->tile;
                 numTilesPlayed++;
               }
             }
-            if (cellCol < numCols - 1){
-              if (currentCell->rightCell->tile != NULL){
+            if (cellCol < numCols - 1) {
+              if (currentCell->rightCell->tile != NULL) {
+                direction = HORIZONTAL;
                 cell_play_tile(currentCell);
+                currentCell->tile->next = wordHead;
+                wordHead = currentCell->tile;
                 numTilesPlayed++;
               }
             }
 
           }
+          else {
+
+            if (direction == VERTICAL) {
+
+              if (cellRow > 0) {
+                if (currentCell->aboveCell->tile != NULL) {
+                  cell_play_tile(currentCell);
+                  currentCell->aboveCell->tile->next = currentCell->tile;
+                  numTilesPlayed++;
+                }
+              }
+              if (cellRow < numRows - 1) {
+                if (currentCell->belowCell->tile != NULL) {
+                  cell_play_tile(currentCell);
+                  currentCell->tile->next = wordHead;
+                  wordHead = currentCell->tile;
+                  numTilesPlayed++;
+                }
+              }
+
+            }
+            if (direction == HORIZONTAL) {
+
+              if (cellCol > 0) {
+                if (currentCell->leftCell->tile != NULL) {
+                  cell_play_tile(currentCell);
+                  currentCell->leftCell->tile->next = currentCell->tile;
+                  numTilesPlayed++;
+                }
+              }
+              if (cellCol < numCols - 1){
+                if (currentCell->rightCell->tile != NULL) {
+                  cell_play_tile(currentCell);
+                  currentCell->tile->next = wordHead;
+                  wordHead = currentCell->tile;
+                  numTilesPlayed++;
+                }
+              }
+
+            }
+
+          }
+
+        }
+        else {
+
+          while(wordHead != NULL){
+            printw("%c", wordHead->letter);
+            wordHead = wordHead->next;
+          }
+
+          /*
+          char word[numTilesPlayed + 1];
+          for (int i = 0; i < numTilesPlayed; i++) {
+            word[i] = wordHead->letter;
+            wordHead = wordHead->next;
+          }
+          word[numTilesPlayed] = '\0';
+          */
 
         }
 
