@@ -8,6 +8,8 @@ int check_valid_tile_placement(WORD* word, CELL* current){
   CELL* cell = word->head;
   if (word->head == NULL){
     word->head = current;
+    cell_place_tile(current);
+    return 1;
   }
   else if (word->direction == NONE){
 

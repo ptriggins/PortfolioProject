@@ -57,7 +57,7 @@ int main(int argc, char* argv[]){
 
   while (1){
 
-    mvprintw(0, 0, "(%d)", tileIndex);
+    mvprintw(0, 0, "%d", tileIndex);
     int ch = getch();
 
     if (location == GAMEBOARD){
@@ -65,7 +65,7 @@ int main(int argc, char* argv[]){
       currentCell = gameboard->cells[row][col];
       if (ch == ENTER){
 
-        if (currentCell->temp == NULL){
+        if (currentCell->temp != NULL){
           if (check_valid_tile_placement(word, currentCell) == 0)
             printw("Invalid Tile Placement");
         }
@@ -103,7 +103,6 @@ int main(int argc, char* argv[]){
 
         if (col == 0 && p1->hand->numTiles > 0 && currentCell->temp == NULL){
           currentCell->selected = 0;
-          tileIndex = 0;
           p1->hand->tiles[tileIndex]->selected = 1;
           location = HAND;
         }
@@ -138,14 +137,32 @@ int main(int argc, char* argv[]){
       else if (currentTile->chosen == 0){
 
         if (ch == KEY_UP && tileIndex > 0){
+
           currentTile->selected = 0;
-          p1->hand->tiles[tileIndex - 1]->selected = 1;
-          tileIndex--;
+          while (tileIndex > 0){
+
+            if (p1->hand->tiles[tileIndex - 1]->location == 0){
+              p1->hand->tiles[tileIndex - 1]->selected = 1;
+              break;
+            }
+            tileIndex--;
+
+          }
+
         }
         else if (ch == KEY_DOWN && tileIndex < p1->hand->numTiles - 1){
+
           currentTile->selected = 0;
-          p1->hand->tiles[tileIndex + 1]->selected = 1;
-          tileIndex++;
+          while (tileIndex < 6){
+
+            if (p1->hand->tiles[tileIndex + 1]->location == 0){
+              p1->hand->tiles[tileIndex + 1]->selected = 1;
+              break;
+            }
+            tileIndex++;
+
+          }
+
         }
         else if (ch == KEY_RIGHT){
           currentTile->selected = 0;
@@ -162,8 +179,14 @@ int main(int argc, char* argv[]){
           currentCell->temp = currentTile;
           currentTile->location = 0;
           hand_erase(p1->hand);
-
           location = GAMEBOARD;
+
+          for (int i = 0; i < 7; i++){
+            if (p1->hand->tiles[tileIndex]->location == 0)
+              tileIndex++;
+            if (tileIndex == 7)
+              tileIndex = 0;
+          }
 
         }
 
