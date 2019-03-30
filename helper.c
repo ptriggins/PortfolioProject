@@ -3,7 +3,7 @@
 #include <ncurses.h>
 #include "word.h"
 
-int check_valid_tile_placement(WORD* word, CELL* current){
+void check_valid_tile_placement(WORD* word, CELL* current){
 
   CELL* cell = word->head;
   current->tile = current->temp;
@@ -11,7 +11,7 @@ int check_valid_tile_placement(WORD* word, CELL* current){
   if (word->head == NULL){
     word->head = current;
     current->temp = NULL;
-    return 1;
+    return;
   }
   else if (word->direction == NONE){
 
@@ -23,7 +23,7 @@ int check_valid_tile_placement(WORD* word, CELL* current){
           word->head = cell;
           word->direction = VERTICAL;
           current->temp = NULL;
-          return 1;
+          return;
         }
         else
           cell = cell->above;
@@ -39,7 +39,7 @@ int check_valid_tile_placement(WORD* word, CELL* current){
         if (cell == current){
           word->direction = VERTICAL;
           current->temp = NULL;
-          return 1;
+          return;
         }
         else{
           cell = cell->below;
@@ -57,7 +57,7 @@ int check_valid_tile_placement(WORD* word, CELL* current){
           word->head = cell;
           word->direction = HORIZONTAL;
           current->temp = NULL;
-          return 1;
+          return;
         }
         else
           cell = cell->left;
@@ -73,7 +73,7 @@ int check_valid_tile_placement(WORD* word, CELL* current){
         if (cell == current){
           word->direction = HORIZONTAL;
           current->temp = NULL;
-          return 1;
+          return;
         }
         else
           cell = cell->right;
@@ -93,7 +93,7 @@ int check_valid_tile_placement(WORD* word, CELL* current){
         if (cell == current){
           word->head = cell;
           current->temp = NULL;
-          return 1;
+          return;
         }
         else
           cell = cell->above;
@@ -108,7 +108,7 @@ int check_valid_tile_placement(WORD* word, CELL* current){
 
         if (cell == current){
           current->temp = NULL;
-          return 1;
+          return;
         }
         else
           cell = cell->below;
@@ -128,7 +128,7 @@ int check_valid_tile_placement(WORD* word, CELL* current){
         if (cell == current){
           word->head = cell;
           current->temp = NULL;
-          return 1;
+          return;
         }
         else
           cell = cell->left;
@@ -143,7 +143,7 @@ int check_valid_tile_placement(WORD* word, CELL* current){
 
         if (cell == current){
           current->temp = NULL;
-          return 1;
+          return;
         }
         else
           cell = cell->right;
@@ -155,6 +155,6 @@ int check_valid_tile_placement(WORD* word, CELL* current){
 
   }
   current->tile = NULL;
-  return 0;
+  printw("Invalid Tile Placement");
 
 }

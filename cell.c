@@ -71,6 +71,9 @@ void cell_get_type(char type[3], int yDistance, int xDistance){
 
 void cell_draw(WINDOW* win, int y, int x, CELL* self){
 
+  if (self->tile != NULL)
+    self->tile->selected = self->selected;
+
   if (self->temp != NULL)
     tile_draw(win, y, x, self->temp);
   else if(self->tile != NULL)

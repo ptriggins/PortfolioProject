@@ -65,15 +65,16 @@ int main(int argc, char* argv[]){
       if (ch == ENTER){
 
         if (currentCell->temp != NULL){
-          if (check_valid_tile_placement(word, currentCell) == 0)
-            printw("Invalid Tile Placement");
+          check_valid_tile_placement(word, currentCell);
         }
         else if (word->head != NULL){
 
-          if (move_check(word, dictionary) == 0)
-            printw("Invalid Word");
-          else
+          if (move_check(word, dictionary) > 0){
             word_set(word);
+          }
+          else
+            word_cancel(word);
+          word = word_create();
 
         }
 

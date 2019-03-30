@@ -42,6 +42,7 @@ void word_set(WORD* self){
       if (cell->played != 1)
         cell_play_tile(cell);
       cell = cell->below;
+
     }
   }
   else if(self->direction == HORIZONTAL){
@@ -50,6 +51,7 @@ void word_set(WORD* self){
       if (cell->played != 1)
         cell_play_tile(cell);
       cell = cell->right;
+
     }
   }
 
@@ -62,6 +64,7 @@ int move_check(WORD* word, NODE* dictionary){
 
   while (head != NULL){
 
+    newHead = head;
     if (word->direction ==VERTICAL){
 
       if (head->left->tile != NULL){
@@ -69,14 +72,14 @@ int move_check(WORD* word, NODE* dictionary){
         while (newHead->left->tile != NULL){
           newHead = newHead->left;
         }
-        wordScore = word_check(newHead, dictionary, VERTICAL);
+        wordScore = word_check(newHead, dictionary, HORIZONTAL);
         if (wordScore == 0)
           return 0;
 
       }
       else if (head->right->tile!= NULL){
 
-        wordScore = (word_check(head, dictionary, VERTICAL));
+        wordScore = (word_check(head, dictionary, HORIZONTAL));
         if (wordScore == 0)
           return 0;
 
