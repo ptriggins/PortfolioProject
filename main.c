@@ -57,7 +57,7 @@ int main(int argc, char* argv[]){
 
   while (1){
 
-    mvprintw(0, 0, "(%d %d)\n", row, col);
+    mvprintw(0, 0, "(%d)", tileIndex);
     int ch = getch();
 
     if (location == GAMEBOARD){
@@ -141,7 +141,7 @@ int main(int argc, char* argv[]){
           p1->hand->tiles[tileIndex - 1]->selected = 1;
           tileIndex--;
         }
-        else if (ch == KEY_DOWN && tileIndex < 7){
+        else if (ch == KEY_DOWN && tileIndex < p1->hand->numTiles - 1){
           currentTile->selected = 0;
           p1->hand->tiles[tileIndex + 1]->selected = 1;
           tileIndex++;
