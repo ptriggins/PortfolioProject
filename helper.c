@@ -6,18 +6,20 @@
 int check_valid_tile_placement(WORD* word, CELL* current){
 
   CELL* cell = word->head;
+  current->tile = current->temp;
+
   if (word->head == NULL){
     word->head = current;
-    cell_place_tile(current);
+    current->temp = NULL;
     return 1;
   }
   else if (word->direction == NONE){
 
     while (cell->tile != NULL){
       if (cell == current){
-        cell_place_tile(current);
         word->head = cell;
         word->direction = VERTICAL;
+        current->temp = NULL;
         return 1;
       }
       cell = cell->above;
@@ -26,8 +28,8 @@ int check_valid_tile_placement(WORD* word, CELL* current){
     cell = word->head;
     while (cell->tile != NULL){
       if (cell == current){
-        cell_place_tile(current);
         word->direction = VERTICAL;
+        current->temp = NULL;
         return 1;
       }
       cell = cell->below;
@@ -36,9 +38,9 @@ int check_valid_tile_placement(WORD* word, CELL* current){
     cell = word->head;
     while (cell->tile != NULL){
       if (cell == current){
-        cell_place_tile(current);
         word->head = cell;
         word->direction = HORIZONTAL;
+        current->temp = NULL;
         return 1;
       }
       cell = cell->left;
@@ -47,8 +49,8 @@ int check_valid_tile_placement(WORD* word, CELL* current){
     cell = word->head;
     while (cell->tile != NULL){
       if (cell == current){
-        cell_place_tile(current);
         word->direction = HORIZONTAL;
+        current->temp = NULL;
         return 1;
       }
       cell = cell->right;
@@ -59,8 +61,8 @@ int check_valid_tile_placement(WORD* word, CELL* current){
 
     while (cell->tile != NULL){
       if (cell == current){
-        cell_place_tile(current);
         word->head = cell;
+        current->temp = NULL;
         return 1;
       }
       cell = cell->above;
@@ -69,7 +71,7 @@ int check_valid_tile_placement(WORD* word, CELL* current){
     cell = word->head;
     while (cell->tile != NULL){
       if (cell == current){
-        cell_place_tile(current);
+        current->temp = NULL;
         return 1;
       }
       cell = cell->below;
@@ -81,8 +83,8 @@ int check_valid_tile_placement(WORD* word, CELL* current){
 
     while (cell->tile != NULL){
       if (cell == current){
-        cell_place_tile(current);
         word->head = cell;
+        current->temp = NULL;
         return 1;
       }
       cell = cell->left;
@@ -91,13 +93,14 @@ int check_valid_tile_placement(WORD* word, CELL* current){
     cell = word->head;
     while (cell->tile != NULL){
       if (cell == current){
-        cell_place_tile(current);
+        current->temp = NULL;
         return 1;
       }
       cell = cell->right;
     }
 
   }
+  current->tile = NULL;
   return 0;
 
 }

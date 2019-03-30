@@ -57,7 +57,6 @@ int main(int argc, char* argv[]){
 
   while (1){
 
-    mvprintw(0, 0, "%d", tileIndex);
     int ch = getch();
 
     if (location == GAMEBOARD){
@@ -66,10 +65,11 @@ int main(int argc, char* argv[]){
       if (ch == ENTER){
 
         if (currentCell->temp != NULL){
+          printw("test");
           if (check_valid_tile_placement(word, currentCell) == 0)
             printw("Invalid Tile Placement");
         }
-        else {
+        else if (word->head != NULL){
 
           if (move_check(word, dictionary) == 0)
             printw("Invalid Move");
@@ -138,28 +138,32 @@ int main(int argc, char* argv[]){
 
         if (ch == KEY_UP && tileIndex > 0){
 
-          currentTile->selected = 0;
-          while (tileIndex > 0){
+          int i = tileIndex;
+          while (i > 0){
 
-            if (p1->hand->tiles[tileIndex - 1]->location == 0){
-              p1->hand->tiles[tileIndex - 1]->selected = 1;
+            if (p1->hand->tiles[i - 1]->location == 1){
+              currentTile->selected = 0;
+              p1->hand->tiles[i - 1]->selected = 1;
+              tileIndex = i - 1;
               break;
             }
-            tileIndex--;
+            i--;
 
           }
 
         }
         else if (ch == KEY_DOWN && tileIndex < p1->hand->numTiles - 1){
 
-          currentTile->selected = 0;
-          while (tileIndex < 6){
+          int i = tileIndex;
+          while (i < 6){
 
-            if (p1->hand->tiles[tileIndex + 1]->location == 0){
-              p1->hand->tiles[tileIndex + 1]->selected = 1;
+            if (p1->hand->tiles[i + 1]->location == 1){
+              currentTile->selected = 0;
+              p1->hand->tiles[i + 1]->selected = 1;
+              tileIndex = i + 1;
               break;
             }
-            tileIndex++;
+            i++;
 
           }
 
