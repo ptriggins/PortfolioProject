@@ -1,6 +1,5 @@
 #include "board.h"
 
-// Initializes all of a board's attributes
 void board_init(BOARD* self, int numRows, int numCols, int availableRows, int availableCols){
 
   if (numRows <= availableRows)
@@ -39,13 +38,13 @@ void board_init(BOARD* self, int numRows, int numCols, int availableRows, int av
     for (int j = 0; j < numCols; j++) {
 
       if (i != 0)
-        self->cells[i][j]->aboveCell = self->cells[i - 1][j];
+        self->cells[i][j]->above = self->cells[i - 1][j];
       if (i != numRows - 1)
-        self->cells[i][j]->belowCell = self->cells[i + 1][j];
+        self->cells[i][j]->below = self->cells[i + 1][j];
       if (j != 0)
-        self->cells[i][j]->leftCell = self->cells[i][j - 1];
+        self->cells[i][j]->left = self->cells[i][j - 1];
       if (j != numCols - 1)
-        self->cells[i][j]->rightCell = self->cells[i][j + 1];
+        self->cells[i][j]->right = self->cells[i][j + 1];
 
     }
   }
@@ -55,12 +54,10 @@ void board_init(BOARD* self, int numRows, int numCols, int availableRows, int av
 
 }
 
-// Allocates memory for a board with variable rows and columns
 BOARD* board_create(int numRows, int numCols, int availableRows, int availableCols){
 
   BOARD* newBoard = (BOARD*) malloc(sizeof(BOARD));
 
-  // Allocates memory for a two dimensional array of cell pointers
   newBoard->cells = (CELL***) malloc(numRows * sizeof(CELL**));
   for (int i = 0; i < numRows; i++){
     newBoard->cells[i] = (CELL**) malloc(numCols * sizeof(CELL*));
@@ -89,4 +86,13 @@ void board_draw(BOARD* self){
   }
 
   wrefresh(self->window);
+
+}
+
+void board_switch_cells(CELL* currentCell, CELL* nextCell){
+
+  cell_switch_selection(currentCell, nextCell);
+  if (currentCell->temp != NULL)
+    cell_switch_tile(currentCell, nextCell);
+
 }

@@ -1,14 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ncurses.h>
-
-typedef struct NODE{
-
-  char word[20];
-  struct NODE *left, *right;
-
-}NODE;
+#include "dictionary.h"
 
 NODE* node_create(char word[20]){
 

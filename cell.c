@@ -2,43 +2,43 @@
 
 void cell_init(CELL* self, char type[3]){
 
-  self->selected = 0;
+  self->selected = 0, self->occupied = 0;
   strcpy(self->type, type);
 
   if (strcmp(type, "") == 0){
-    self->letterMultiplier = 0;
-    self->wordMultiplier = 0;
+    self->letterScore = 1;
+    self->wordScore = 1;
     self->color = YELLOW;
   }
   else if (strcmp(type, "ST") == 0){
-    self->letterMultiplier = 0;
-    self->wordMultiplier = 2;
+    self->letterScore = 1;
+    self->wordScore = 2;
     self->color = MAGENTA;
     self->selected = 1;
   }
   else if (strcmp(type, "DL") == 0){
-    self->letterMultiplier = 2;
-    self->wordMultiplier = 0;
+    self->letterScore = 2;
+    self->wordScore = 1;
     self->color = CYAN;
   }
   else if (strcmp(type, "TL") == 0){
-    self->letterMultiplier = 3;
-    self->wordMultiplier = 0;
+    self->letterScore = 3;
+    self->wordScore = 1;
     self->color = BLUE;
   }
   else if (strcmp(type, "DW") == 0){
-    self->letterMultiplier = 0;
-    self->wordMultiplier = 2;
+    self->letterScore = 1;
+    self->wordScore = 2;
     self->color = MAGENTA;
   }
   else if (strcmp(type, "TW") == 0){
-    self->letterMultiplier = 0;
-    self->wordMultiplier = 3;
+    self->letterScore = 1;
+    self->wordScore = 3;
     self->color = RED;
   }
 
-  self->tempTile = NULL, self->tile = NULL;
-  self->aboveCell = NULL, self->belowCell = NULL, self->leftCell = NULL, self->rightCell = NULL;
+  self->temp = NULL, self->tile = NULL;
+  self->above = NULL, self->below = NULL, self->left = NULL, self->right = NULL;
 
 }
 
@@ -71,8 +71,8 @@ void cell_get_type(char type[3], int yDistance, int xDistance){
 
 void cell_draw(WINDOW* win, int y, int x, CELL* self){
 
-  if (self->tempTile != NULL)
-    tile_draw(win, y, x, self->tempTile);
+  if (self->temp != NULL)
+    tile_draw(win, y, x, self->temp);
   else if(self->tile != NULL)
     tile_draw(win, y, x, self->tile);
   else{
@@ -80,26 +80,19 @@ void cell_draw(WINDOW* win, int y, int x, CELL* self){
     wattron(win, A_BOLD);
     wattron(win, COLOR_PAIR(self->color));
 
-    mvwprintw(win, y, x, "     ");
-    mvwprintw(win, y + 1, x, "     ");
-    mvwprintw(win, y + 2, x, "     ");
-
+    draw_background(win, y, x);
     if (self->selected == 1){
-      mvwaddch(win, y, x, ACS_ULCORNER);
-      mvwaddch(win, y, x + 4, ACS_URCORNER);
-      mvwaddch(win, y + 2, x, ACS_LLCORNER);
-      mvwaddch(win, y + 2, x + 4, ACS_LRCORNER);
+      draw_cursor(win, y, x);
     }
-
     mvwprintw(win, y, x, "%s", self->type);
 
   }
 
 }
 
-void cell_play_tile(CELL* self){
-  self->tile = self->tempTile;
-  self->tempTile = NULL;
+void cell_place_tile(CELL* self){
+  self->tile = self->temp;
+  self->temp = NULL;
 }
 
 void cell_switch_selection(CELL* oldCell, CELL* newCell){
@@ -108,6 +101,6 @@ void cell_switch_selection(CELL* oldCell, CELL* newCell){
 }
 
 void cell_switch_tile(CELL* oldCell, CELL* newCell){
-  newCell->tempTile = oldCell->tempTile;
-  oldCell->tempTile = NULL;
+  newCell->temp = oldCell->temp;
+  oldCell->temp = NULL;
 }

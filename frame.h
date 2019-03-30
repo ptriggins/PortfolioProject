@@ -9,8 +9,9 @@ typedef struct FRAME{
 
 }FRAME;
 
+void frame_init(FRAME* self, int numRows, int numCols, int availableRows, int availableCols);
 FRAME *frame_create(int numRows, int numCols, int availableRows, int availableCols);
-void frame_move_up(FRAME* self);
-void frame_move_down(FRAME* self);
-void frame_move_left(FRAME* self);
-void frame_move_right(FRAME* self);
+void frame_move_up(FRAME*self);
+void frame_move_down(FRAME*self);
+void frame_move_left(FRAME*self);
+void frame_move_right(FRAME*self);

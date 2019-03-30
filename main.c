@@ -1,18 +1,15 @@
 #include <stdio.h>
 #include <ncurses.h>
 #include "board.h"
-#include "hand.h"
-#include "dictionary.c"
+#include "player.h"
+#include "word.h"
+#include "helper.c"
 
 #define GAMEBOARD 0
-#define HAND1 1
-#define HAND2 2
+#define HAND 1
 
 #define ENTER 10
-
-#define NONE 0
-#define HORIZONTAL 1
-#define VERTICAL 2
+#define ESCAPE 27
 
 int main(int argc, char* argv[]){
 
@@ -38,203 +35,100 @@ int main(int argc, char* argv[]){
   int numRows = atoi(argv[1]), numCols = atoi(argv[2]);
   int screenRows = LINES / CELL_HEIGHT, screenCols = COLS / CELL_WIDTH;
 
-  BOARD *gameboard = board_create(numRows, numCols, screenRows, screenCols - (2 * MARGIN_WIDTH));
-  FRAME *viewframe = gameboard->viewframe;
-
-  TILEBAG *tilebag = bag_create("alphabet.txt");
-  HAND *hand = hand_create(gameboard->startRow, gameboard->startCol - MARGIN_WIDTH, tilebag);
+  BOARD* gameboard = board_create(numRows, numCols, screenRows, screenCols - (2 * MARGIN_WIDTH));
+  FRAME* viewframe = gameboard->viewframe;
+  TILEBAG* tilebag = bag_create("alphabet.txt");
   NODE* dictionary = dictionary_create("dictionary.txt", 276643);
+
+  PLAYER* p1 = player_create(gameboard->startRow, gameboard->startCol - MARGIN_WIDTH, tilebag);
 
   int location = GAMEBOARD;
 
   board_draw(gameboard);
-  hand_draw(hand);
+  hand_draw(p1->hand);
 
-  int direction = 0, numTilesPlayed = 0;
-  TILE *wordHead;
-
-  int cellRow = viewframe->centerRow, cellCol = viewframe->centerCol;
+  int row = viewframe->centerRow, col = viewframe->centerCol;
   CELL* currentCell;
 
   int tileIndex = 0;
-  TILE* currentTile = hand->tiles[tileIndex];
+  TILE* currentTile = p1->hand->tiles[tileIndex];
+
+  WORD* word = word_create();
 
   while (1){
 
+    mvprintw(0, 0, "(%d %d)\n", row, col);
     int ch = getch();
 
-    if (location == GAMEBOARD) {
+    if (location == GAMEBOARD){
 
-      currentCell = gameboard->cells[cellRow][cellCol];
+      currentCell = gameboard->cells[row][col];
+      if (ch == ENTER){
 
-      if(ch == ENTER) {
-
-        if (currentCell->tempTile != NULL){
-
-          if (numTilesPlayed == 0) {
-            cell_play_tile(currentCell);
-            wordHead = currentCell->tile;
-            numTilesPlayed++;
-          }
-          else if (numTilesPlayed == 1) {
-
-            if (cellRow > 0) {
-              if (currentCell->aboveCell->tile != NULL) {
-                direction = VERTICAL;
-                cell_play_tile(currentCell);
-                currentCell->aboveCell->tile->next = currentCell->tile;
-                numTilesPlayed++;
-              }
-            }
-            if (cellRow < numRows - 1) {
-              if(currentCell->belowCell->tile != NULL) {
-                direction = VERTICAL;
-                cell_play_tile(currentCell);
-                currentCell->tile->next = wordHead;
-                wordHead = currentCell->tile;
-                numTilesPlayed++;
-              }
-            }
-            if (cellCol > 0) {
-              if (currentCell->leftCell->tile != NULL) {
-                direction = HORIZONTAL;
-                cell_play_tile(currentCell);
-                currentCell->leftCell->tile->next = currentCell->tile;
-                numTilesPlayed++;
-              }
-            }
-            if (cellCol < numCols - 1) {
-              if (currentCell->rightCell->tile != NULL) {
-                direction = HORIZONTAL;
-                cell_play_tile(currentCell);
-                currentCell->tile->next = wordHead;
-                wordHead = currentCell->tile;
-                numTilesPlayed++;
-              }
-            }
-            
-          }
-          else if (numTilesPlayed > 1){
-
-            if (direction == VERTICAL) {
-
-              if (cellRow > 0) {
-                if (currentCell->aboveCell->tile != NULL) {
-                  cell_play_tile(currentCell);
-                  currentCell->aboveCell->tile->next = currentCell->tile;
-                  numTilesPlayed++;
-                }
-              }
-              if (cellRow < numRows - 1) {
-                if (currentCell->belowCell->tile != NULL) {
-                  cell_play_tile(currentCell);
-                  currentCell->tile->next = wordHead;
-                  wordHead = currentCell->tile;
-                  numTilesPlayed++;
-                }
-              }
-
-            }
-            if (direction == HORIZONTAL) {
-
-              if (cellCol > 0) {
-                if (currentCell->leftCell->tile != NULL) {
-                  cell_play_tile(currentCell);
-                  currentCell->leftCell->tile->next = currentCell->tile;
-                  numTilesPlayed++;
-                }
-              }
-              if (cellCol < numCols - 1) {
-                if (currentCell->rightCell->tile != NULL) {
-                  cell_play_tile(currentCell);
-                  currentCell->tile->next = wordHead;
-                  wordHead = currentCell->tile;
-                  numTilesPlayed++;
-                }
-              }
-
-            }
-
-          }
-
+        if (currentCell->temp == NULL){
+          if (check_valid_tile_placement(word, currentCell) == 0)
+            printw("Invalid Tile Placement");
         }
         else {
 
-          char word[numTilesPlayed + 1];
-          for (int i = 0; i < numTilesPlayed; i++) {
-            word[i] = wordHead->letter;
-            wordHead = wordHead->next;
-          }
-          word[numTilesPlayed] = '\0';
-
-          if (dictionary_search(word, dictionary) == 1){
-            printw("Valid Word");
-          }
+          if (move_check(word, dictionary) == 0)
+            printw("Invalid Move");
           else
-            printw("Invalid Word");
+            word_set(word);
 
         }
 
       }
-      else if (ch == KEY_UP && cellRow > 0){
+      else if (ch == ESCAPE){
+        word_cancel(word);
+      }
+      else if (ch == KEY_UP && row > 0){
 
-        cell_switch_selection(currentCell, currentCell->aboveCell);
-        if (currentCell->tempTile != NULL)
-          cell_switch_tile(currentCell, currentCell->aboveCell);
-
-        if (cellRow == viewframe->centerRow && viewframe->topRow > 0)
+        board_switch_cells(currentCell, currentCell->above);
+        if (row == viewframe->centerRow && viewframe->topRow > 0)
           frame_move_up(viewframe);
-        cellRow--;
+        row--;
 
       }
-      else if (ch == KEY_DOWN && cellRow < numRows - 1){
+      else if (ch == KEY_DOWN && row < numRows - 1){
 
-        cell_switch_selection(currentCell, currentCell->belowCell);
-        if (currentCell->tempTile != NULL)
-          cell_switch_tile(currentCell, currentCell->belowCell);
-
-        if (cellRow == viewframe->centerRow && viewframe->bottomRow < numRows - 1 )
+        board_switch_cells(currentCell, currentCell->below);
+        if (row == viewframe->centerRow && viewframe->bottomRow < numRows - 1 )
           frame_move_down(viewframe);
-        cellRow++;
+        row++;
 
       }
       else if (ch == KEY_LEFT){
 
-        if (cellCol == 0 && hand->numTiles > 0 && currentCell->tempTile == NULL){
+        if (col == 0 && p1->hand->numTiles > 0 && currentCell->temp == NULL){
           currentCell->selected = 0;
           tileIndex = 0;
-          hand->tiles[tileIndex]->selected = 1;
-          location = HAND1;
+          p1->hand->tiles[tileIndex]->selected = 1;
+          location = HAND;
         }
-        else if(cellCol > 0){
+        else if(col > 0){
 
-          cell_switch_selection(currentCell, currentCell->leftCell);
-          if (currentCell->tempTile != NULL)
-            cell_switch_tile(currentCell, currentCell->leftCell);
-
-          if (cellCol == viewframe->centerCol && viewframe->leftCol > 0)
+          board_switch_cells(currentCell, currentCell->left);
+          if (col == viewframe->centerCol && viewframe->leftCol > 0)
             frame_move_left(viewframe);
-          cellCol--;
+          col--;
 
         }
 
       }
-      else if (ch == KEY_RIGHT && cellCol < numCols - 1){
+      else if (ch == KEY_RIGHT && col < numCols - 1){
 
-        cell_switch_selection(currentCell, currentCell->rightCell);
-        if (currentCell->tempTile != NULL)
-          cell_switch_tile(currentCell, currentCell->rightCell);
-
-        if (cellCol == viewframe->centerCol && viewframe->rightCol < numCols - 1)
+        board_switch_cells(currentCell, currentCell->right);
+        if (col == viewframe->centerCol && viewframe->rightCol < numCols - 1)
           frame_move_right(viewframe);
-        cellCol++;
+        col++;
 
       }
 
     }
-    else if (location == HAND1){
+    else if (location == HAND){
 
-      currentTile = hand->tiles[tileIndex];
+      currentTile = p1->hand->tiles[tileIndex];
 
       if (ch == ENTER){
           currentTile->selected = !currentTile->selected;
@@ -244,12 +138,12 @@ int main(int argc, char* argv[]){
 
         if (ch == KEY_UP && tileIndex > 0){
           currentTile->selected = 0;
-          hand->tiles[tileIndex - 1]->selected = 1;
+          p1->hand->tiles[tileIndex - 1]->selected = 1;
           tileIndex--;
         }
-        else if (ch == KEY_DOWN && tileIndex < TILES_PER_HAND - 1){
+        else if (ch == KEY_DOWN && tileIndex < 7){
           currentTile->selected = 0;
-          hand->tiles[tileIndex + 1]->selected = 1;
+          p1->hand->tiles[tileIndex + 1]->selected = 1;
           tileIndex++;
         }
         else if (ch == KEY_RIGHT){
@@ -263,19 +157,10 @@ int main(int argc, char* argv[]){
 
         if (ch == KEY_RIGHT){
 
-          currentTile->selected = 0;
           currentCell->selected = 1;
-          currentCell->tempTile = currentTile;
-
-          if (currentTile->chosen == 1){
-
-            for (int i = tileIndex; i < hand->numTiles; i++){
-              hand->tiles[i] = hand->tiles[i + 1];
-            }
-            hand_erase(hand);
-            hand->numTiles--;
-
-          }
+          currentCell->temp = currentTile;
+          currentTile->location = 0;
+          hand_erase(p1->hand);
 
           location = GAMEBOARD;
 
@@ -286,7 +171,7 @@ int main(int argc, char* argv[]){
     }
 
     board_draw(gameboard);
-    hand_draw(hand);
+    hand_draw(p1->hand);
 
   }
 

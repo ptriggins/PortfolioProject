@@ -5,14 +5,13 @@
 #include <ncurses.h>
 #include "tile.h"
 
-#define TILES_PER_BAG 98
-
 typedef struct TILEBAG{
 
   int numTiles;
-  TILE* tiles[TILES_PER_BAG];
+  TILE* tiles[100];
 
 }TILEBAG;
 
+void bag_init(TILEBAG* self, char* settingsFile);
 TILEBAG* bag_create(char* settingsFile);
 TILE* bag_draw_tile(TILEBAG* self);
