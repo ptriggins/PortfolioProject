@@ -15,88 +15,142 @@ int check_valid_tile_placement(WORD* word, CELL* current){
   }
   else if (word->direction == NONE){
 
-    while (cell->tile != NULL){
-      if (cell == current){
-        word->head = cell;
-        word->direction = VERTICAL;
-        current->temp = NULL;
-        return 1;
-      }
-      cell = cell->above;
-    }
+    cell = word->head->above;
+    while (cell != NULL){
+      if (cell->tile != NULL){
 
-    cell = word->head;
-    while (cell->tile != NULL){
-      if (cell == current){
-        word->direction = VERTICAL;
-        current->temp = NULL;
-        return 1;
-      }
-      cell = cell->below;
-    }
+        if (cell == current){
+          word->head = cell;
+          word->direction = VERTICAL;
+          current->temp = NULL;
+          return 1;
+        }
+        else
+          cell = cell->above;
 
-    cell = word->head;
-    while (cell->tile != NULL){
-      if (cell == current){
-        word->head = cell;
-        word->direction = HORIZONTAL;
-        current->temp = NULL;
-        return 1;
       }
-      cell = cell->left;
+      else
+        break;
     }
+    cell = word->head->below;
+    while (cell != NULL){
+      if (cell->tile != NULL){
 
-    cell = word->head;
-    while (cell->tile != NULL){
-      if (cell == current){
-        word->direction = HORIZONTAL;
-        current->temp = NULL;
-        return 1;
+        if (cell == current){
+          word->direction = VERTICAL;
+          current->temp = NULL;
+          return 1;
+        }
+        else{
+          cell = cell->below;
+        }
+
       }
-      cell = cell->right;
+      else
+        break;
+    }
+    cell = word->head->left;
+    while (cell != NULL){
+      if (cell->tile != NULL){
+
+        if (cell == current){
+          word->head = cell;
+          word->direction = HORIZONTAL;
+          current->temp = NULL;
+          return 1;
+        }
+        else
+          cell = cell->left;
+
+      }
+      else
+        break;
+    }
+    cell = word->head->right;
+    while (cell != NULL){
+      if (cell->tile != NULL){
+
+        if (cell == current){
+          word->direction = HORIZONTAL;
+          current->temp = NULL;
+          return 1;
+        }
+        else
+          cell = cell->right;
+
+      }
+      else
+        break;
     }
 
   }
   else if (word->direction == VERTICAL){
 
-    while (cell->tile != NULL){
-      if (cell == current){
-        word->head = cell;
-        current->temp = NULL;
-        return 1;
-      }
-      cell = cell->above;
-    }
+    cell = word->head->above;
+    while (cell != NULL){
+      if (cell->tile != NULL){
 
-    cell = word->head;
-    while (cell->tile != NULL){
-      if (cell == current){
-        current->temp = NULL;
-        return 1;
-      }
-      cell = cell->below;
-    }
+        if (cell == current){
+          word->head = cell;
+          current->temp = NULL;
+          return 1;
+        }
+        else
+          cell = cell->above;
 
+      }
+      else
+        break;
+    }
+    cell = word->head->below;
+    while (cell != NULL){
+      if (cell->tile != NULL){
+
+        if (cell == current){
+          current->temp = NULL;
+          return 1;
+        }
+        else
+          cell = cell->below;
+
+      }
+      else
+        break;
+    }
 
   }
   else if (word->direction == HORIZONTAL){
 
-    while (cell->tile != NULL){
-      if (cell == current){
-        word->head = cell;
-        current->temp = NULL;
-        return 1;
-      }
-      cell = cell->left;
-    }
+    cell = word->head->left;
+    while (cell != NULL){
+      if (cell->tile != NULL){
 
-    cell = word->head;
-    while (cell->tile != NULL){
-      if (cell == current){
-        current->temp = NULL;
-        return 1;
+        if (cell == current){
+          word->head = cell;
+          current->temp = NULL;
+          return 1;
+        }
+        else
+          cell = cell->left;
+
       }
-      cell = cell->right;
+      else
+        break;
+    }
+    cell = word->head->right;
+    while (cell != NULL){
+      if (cell->tile != NULL){
+
+        if (cell == current){
+          current->temp = NULL;
+          return 1;
+        }
+        else
+          cell = cell->right;
+
+      }
+      else
+        break;
     }
 
   }

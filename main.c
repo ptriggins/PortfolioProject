@@ -65,7 +65,6 @@ int main(int argc, char* argv[]){
       if (ch == ENTER){
 
         if (currentCell->temp != NULL){
-          printw("test");
           if (check_valid_tile_placement(word, currentCell) == 0)
             printw("Invalid Tile Placement");
         }
