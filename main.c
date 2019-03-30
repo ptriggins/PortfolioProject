@@ -71,7 +71,7 @@ int main(int argc, char* argv[]){
         else if (word->head != NULL){
 
           if (move_check(word, dictionary) == 0)
-            printw("Invalid Move");
+            printw("Invalid Word");
           else
             word_set(word);
 

@@ -160,10 +160,13 @@ int word_check(CELL* head, NODE* dictionary, int direction){
     }
 
   }
+  score *= x;
 
-  if (dictionary_search(word, dictionary) == 0)
-    return 0;
-  else
-    return score * x;
+  if (dictionary_search(word, dictionary) == 1){
+    printw("Valid Word: %s + %d\n", word, score);
+    return score;
+  }
+  printw("Invalid Word: %s\n", word);
+  return 0;
 
 }
