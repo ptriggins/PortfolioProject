@@ -21,7 +21,7 @@ typedef struct CELL{
   char type[3];
   int letterScore, wordScore;
   int color;
-  int selected, occupied;
+  int selected, played;
   TILE* temp, *tile;
   struct CELL *above, *below, *left, *right;
 
@@ -31,7 +31,9 @@ CELL* cell_create(char type[3]);
 void cell_get_type(char type[3], int yDistance, int xDistance);
 void cell_draw(WINDOW* win, int y, int x, CELL* cell);
 void cell_place_tile(CELL* self);
+void cell_play_tile(CELL* self);
 void cell_switch_selection(CELL* oldCell, CELL* newCell);
 void cell_switch_tile(CELL* oldCell, CELL* newCell);
+void cell_clear_tiles(CELL* self);
 
 #endif

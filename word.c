@@ -13,15 +13,21 @@ void word_cancel(WORD* self){
 
   CELL* cell = self->head;
   if (self->direction == VERTICAL){
-    while(cell != NULL){
-      tile_return_to_hand(cell->tile);
+    while(cell->tile != NULL){
+
+      if (cell->played != 1)
+        cell_clear_tiles(cell);
       cell = cell->below;
+
     }
   }
   else if(self->direction == HORIZONTAL){
-    while(cell != NULL){
-      tile_return_to_hand(cell->tile);
+    while(cell->tile != NULL){
+
+      if (cell->played != 1)
+        cell_clear_tiles(cell);
       cell = cell->right;
+
     }
   }
 
@@ -31,14 +37,18 @@ void word_set(WORD* self){
 
   CELL* cell = self->head;
   if (self->direction == VERTICAL){
-    while(cell != NULL){
-      tile_set(cell->tile);
+    while(cell->tile != NULL){
+
+      if (cell->played != 1)
+        cell_play_tile(cell);
       cell = cell->below;
     }
   }
   else if(self->direction == HORIZONTAL){
-    while(cell != NULL){
-      tile_set(cell->tile);
+    while(cell->tile != NULL){
+
+      if (cell->played != 1)
+        cell_play_tile(cell);
       cell = cell->right;
     }
   }
@@ -117,21 +127,34 @@ int word_check(CELL* head, NODE* dictionary, int direction){
 
   if (direction == VERTICAL){
 
-    while(cell != NULL){
+    while(cell->tile != NULL){
+
       word[i] = cell->tile->letter;
-      score += cell->tile->score * cell->letterScore;
-      x *= cell->wordScore;
+      if (cell->played == 0){
+        score += cell->tile->score * cell->letterScore;
+        x *= cell->wordScore;
+      }
+      else
+        score += cell->tile->score;
+
       cell = cell->below;
       i++;
+
     }
 
   }
   else if(direction == HORIZONTAL){
 
-    while(cell != NULL){
+    while(cell->tile != NULL){
+
       word[i] = cell->tile->letter;
-      score += cell->tile->score * cell->letterScore;
-      x *= cell->wordScore;
+      if (cell->played == 0){
+        score += cell->tile->score * cell->letterScore;
+        x *= cell->wordScore;
+      }
+      else
+        score += cell->tile->score;
+
       cell = cell->right;
       i++;
     }

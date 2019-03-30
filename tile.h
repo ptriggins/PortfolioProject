@@ -18,8 +18,7 @@ typedef struct TILE{
 
 TILE* tile_create(char letter, int score);
 void tile_draw(WINDOW* win, int y, int x, TILE* self);
-void tile_return_to_hand(TILE* self);
-void tile_set(TILE* self);
+void tile_deselect(TILE* self);
 void draw_background(WINDOW* win, int y, int x);
 void draw_cursor(WINDOW* win, int y, int x);
 

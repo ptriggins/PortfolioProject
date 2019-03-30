@@ -81,6 +81,7 @@ int main(int argc, char* argv[]){
       }
       else if (ch == ESCAPE){
         word_cancel(word);
+        cell_clear_tiles(currentCell);
       }
       else if (ch == KEY_UP && row > 0){
 

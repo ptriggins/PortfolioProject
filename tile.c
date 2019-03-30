@@ -5,7 +5,7 @@ TILE* tile_create(char letter, int score){
   TILE* newTile = (TILE*) malloc(sizeof(TILE));
   newTile->letter = letter;
   newTile->score = score;
-  newTile->location = 0;
+  newTile->location = 1;
   newTile->selected = 0, newTile->chosen = 0;
   return newTile;
 
@@ -27,12 +27,9 @@ void tile_draw(WINDOW* win, int y, int x, TILE* self){
 
 }
 
-void tile_return_to_hand(TILE* self){
+void tile_deselect(TILE* self){
   self->chosen = 0;
-}
-
-void tile_set(TILE* self){
-  self->chosen = 0;
+  self->location = 1;
 }
 
 void draw_background(WINDOW* win, int y, int x){

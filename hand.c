@@ -16,7 +16,6 @@ HAND* hand_create(int startRow, int startCol, TILEBAG* tilebag){
 
   HAND* newHand = (HAND*) malloc(sizeof(HAND));
   hand_init(newHand, startRow, startCol, tilebag);
-
   return newHand;
 
 }
@@ -26,8 +25,10 @@ void hand_draw(HAND* self){
   int y = TILE_HEIGHT, x = TILE_WIDTH;
   for (int i = 0; i < self->numTiles; i++){
 
-      tile_draw(self->window, y, x, self->tiles[i]);
-      y += 2 * TILE_HEIGHT;
+      if (self->tiles[i]->location == 1){
+        tile_draw(self->window, y, x, self->tiles[i]);
+        y += 2 * TILE_HEIGHT;
+      }
 
   }
   wrefresh(self->window);

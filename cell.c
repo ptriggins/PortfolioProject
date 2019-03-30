@@ -2,7 +2,7 @@
 
 void cell_init(CELL* self, char type[3]){
 
-  self->selected = 0, self->occupied = 0;
+  self->selected = 0, self->played = 0;
   strcpy(self->type, type);
 
   if (strcmp(type, "") == 0){
@@ -95,6 +95,11 @@ void cell_place_tile(CELL* self){
   self->temp = NULL;
 }
 
+void cell_play_tile(CELL* self){
+  self->tile->chosen = 0;
+  self->played = 1;
+}
+
 void cell_switch_selection(CELL* oldCell, CELL* newCell){
   oldCell->selected = 0;
   newCell->selected = 1;
@@ -103,4 +108,16 @@ void cell_switch_selection(CELL* oldCell, CELL* newCell){
 void cell_switch_tile(CELL* oldCell, CELL* newCell){
   newCell->temp = oldCell->temp;
   oldCell->temp = NULL;
+}
+
+void cell_clear_tiles(CELL* self){
+
+  if (self->temp != NULL)
+    tile_deselect(self->temp);
+  if (self->tile != NULL)
+    tile_deselect(self->tile);
+  self->temp = NULL;
+  self->tile = NULL;
+  self->selected = 1;
+
 }
