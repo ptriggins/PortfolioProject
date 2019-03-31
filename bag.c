@@ -33,13 +33,17 @@ TILE* bag_draw_tile(TILEBAG* self){
 
   srand(time(0));
   int tileIndex = rand() % self->numTiles;
-  TILE* chosenTile = self->tiles[tileIndex];
 
-  for (int i = tileIndex; i < self->numTiles - 1; i++){
-    self->tiles[i] = self->tiles[i + 1];
+  if (self->numTiles > 0){
+
+    TILE* chosenTile = self->tiles[tileIndex];
+    for (int i = tileIndex; i < self->numTiles - 1; i++){
+      self->tiles[i] = self->tiles[i + 1];
+    }
+    self->numTiles--;
+    return chosenTile;
+
   }
-  self->numTiles--;
-
-  return chosenTile;
+  return NULL;
 
 }

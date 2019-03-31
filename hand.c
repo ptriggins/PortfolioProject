@@ -8,7 +8,6 @@ void hand_init(HAND* self, int startRow, int startCol, TILEBAG* tilebag){
   for (int i = 0; i < 7; i++){
     self->tiles[i] = bag_draw_tile(tilebag);
   }
-  self->window = newwin(16 * TILE_HEIGHT, 3 * TILE_WIDTH, startRow * TILE_HEIGHT, startCol * TILE_WIDTH);
 
 }
 
@@ -20,33 +19,50 @@ HAND* hand_create(int startRow, int startCol, TILEBAG* tilebag){
 
 }
 
-void hand_draw(HAND* self){
+void hand_draw(HAND* self, WINDOW* win){
 
   int y = TILE_HEIGHT, x = TILE_WIDTH;
   for (int i = 0; i < self->numTiles; i++){
 
-      if (self->tiles[i]->location == 1){
-        tile_draw(self->window, y, x, self->tiles[i]);
+      if (self->tiles[i]->location != 2){
+        tile_draw(win, y, x, self->tiles[i]);
         y += 2 * TILE_HEIGHT;
       }
 
   }
-  wrefresh(self->window);
 
 }
 
-void hand_erase(HAND* self){
+void hand_remove_tile(HAND* self, TILE* tile, TILEBAG* tilebag){
 
-  wattron(self->window, COLOR_PAIR(8));
-  int y = TILE_HEIGHT, x = TILE_WIDTH;
   for (int i = 0; i < self->numTiles; i++){
-
-      mvwprintw(self->window, y, x, "     ");
-      mvwprintw(self->window, y + 1, x, "     ");
-      mvwprintw(self->window, y + 2, x, "     ");
-      y += 2 * TILE_HEIGHT;
-
+    if (self->tiles[i] == tile){
+      self->tiles[i] = bag_draw_tile(tilebag);
+    }
   }
-  wrefresh(self->window);
+
+}
+
+int hand_get_next_tile(HAND* self, int start){
+
+  for (int i = start; i < self->numTiles; i++){
+    if (self->tiles[start]->location != 2)
+      return start;
+    else
+      start++;
+  }
+  return start;
+
+}
+
+int hand_get_last_tile(HAND* self, int start){
+
+  for (int i = start; i >= 0; i--){
+    if (self->tiles[start]->location != 2)
+      return start;
+    else
+      start--;
+  }
+  return start;
 
 }

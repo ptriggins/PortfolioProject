@@ -8,7 +8,7 @@ void board_init(BOARD* self, int numRows, int numCols, int availableRows, int av
     self->startRow = 0;
 
   if(numCols <= availableCols)
-    self->startCol = ((availableCols / 2) - (numCols / 2));
+    self->startCol = ((availableCols / 2) - (numCols / 2) + MARGIN_WIDTH);
   else
     self->startCol = MARGIN_WIDTH;
 

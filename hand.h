@@ -14,12 +14,14 @@ typedef struct HAND{
 
   int numTiles, side;
   TILE* tiles[7];
-  WINDOW* window;
 
 }HAND;
 
 HAND* hand_create(int startRow, int startCol, TILEBAG* tilebag);
-void hand_draw(HAND* self);
-void hand_erase(HAND* self);
+void hand_draw(HAND* self, WINDOW* win);
+void hand_erase(HAND* self, WINDOW* win);
+void hand_remove_tile(HAND* self, TILE* tile, TILEBAG* tilebag);
+int hand_get_next_tile(HAND* self, int start);
+int hand_get_last_tile(HAND* self, int start);
 
 #endif

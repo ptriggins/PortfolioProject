@@ -4,12 +4,12 @@
 #include "player.h"
 #include "word.h"
 #include "helper.c"
-
-#define GAMEBOARD 0
-#define HAND 1
+#include "hand.h"
 
 #define ENTER 10
 #define ESCAPE 27
+
+enum locations{player1, player2, board};
 
 int main(int argc, char* argv[]){
 
@@ -25,6 +25,8 @@ int main(int argc, char* argv[]){
   init_pair(6, COLOR_BLACK, COLOR_WHITE);
   init_pair(7, COLOR_WHITE, COLOR_GREEN);
   init_pair(8, COLOR_BLACK, COLOR_BLACK);
+  init_pair(9, COLOR_WHITE, COLOR_BLACK);
+  init_pair(10, COLOR_GREEN, COLOR_BLACK);
 
   keypad(stdscr, TRUE);
   //nodelay(stdscr, TRUE);
@@ -41,11 +43,16 @@ int main(int argc, char* argv[]){
   NODE* dictionary = dictionary_create("dictionary.txt", 276643);
 
   PLAYER* p1 = player_create(gameboard->startRow, gameboard->startCol - MARGIN_WIDTH, tilebag);
+  PLAYER* p2 = player_create(gameboard->startRow, gameboard->startCol + (viewframe->rightCol - viewframe->leftCol + 1), tilebag);
 
-  int location = GAMEBOARD;
+  HAND* hand = p1->hand;
+
+  enum locations location = board;
+  enum locations turn = player1;
 
   board_draw(gameboard);
-  hand_draw(p1->hand);
+  player_draw(p1, 1);
+  player_draw(p2, 0);
 
   int row = viewframe->centerRow, col = viewframe->centerCol;
   CELL* currentCell;
@@ -54,12 +61,15 @@ int main(int argc, char* argv[]){
   TILE* currentTile = p1->hand->tiles[tileIndex];
 
   WORD* word = word_create();
+  int wordScore = 0;
+
+  printw("%d", p2->hand->numTiles);
 
   while (1){
 
     int ch = getch();
 
-    if (location == GAMEBOARD){
+    if (location == board){
 
       currentCell = gameboard->cells[row][col];
       if (ch == ENTER){
@@ -69,8 +79,16 @@ int main(int argc, char* argv[]){
         }
         else if (word->head != NULL){
 
-          if (move_check(word, dictionary) > 0){
-            word_set(word);
+          wordScore = move_check(word, dictionary);
+          if (word > 0){
+
+            if (turn == player1)
+              p1->score += wordScore;
+            if (turn == player2)
+              p2->score += wordScore;
+            turn = !turn;
+            word_set(word, hand, tilebag);
+
           }
           else
             word_cancel(word);
@@ -81,6 +99,7 @@ int main(int argc, char* argv[]){
       }
       else if (ch == ESCAPE){
         word_cancel(word);
+        word = word_create();
         cell_clear_tiles(currentCell);
       }
       else if (ch == KEY_UP && row > 0){
@@ -101,10 +120,11 @@ int main(int argc, char* argv[]){
       }
       else if (ch == KEY_LEFT){
 
-        if (col == 0 && p1->hand->numTiles > 0 && currentCell->temp == NULL){
+        if (col == 0 && p1->hand->numTiles > 0 && turn == player1){
           currentCell->selected = 0;
+          tileIndex = hand_get_next_tile(p1->hand, 0);
           p1->hand->tiles[tileIndex]->selected = 1;
-          location = HAND;
+          location = player1;
         }
         else if(col > 0){
 
@@ -116,19 +136,33 @@ int main(int argc, char* argv[]){
         }
 
       }
-      else if (ch == KEY_RIGHT && col < numCols - 1){
+      else if (ch == KEY_RIGHT){
 
-        board_switch_cells(currentCell, currentCell->right);
-        if (col == viewframe->centerCol && viewframe->rightCol < numCols - 1)
-          frame_move_right(viewframe);
-        col++;
+        if (col == numCols - 1 && p2->hand->numTiles > 0 && turn == player2){
+          currentCell->selected = 0;
+          tileIndex = hand_get_next_tile(p2->hand, 0);
+          p2->hand->tiles[tileIndex]->selected = 1;
+          location = player2;
+        }
+        else if (col < numCols - 1){
+
+          board_switch_cells(currentCell, currentCell->right);
+          if (col == viewframe->centerCol && viewframe->rightCol < numCols - 1)
+            frame_move_right(viewframe);
+          col++;
+
+        }
 
       }
 
     }
-    else if (location == HAND){
+    else{
 
-      currentTile = p1->hand->tiles[tileIndex];
+      if (location == player1)
+        hand = p1->hand;
+      if (location == player2)
+        hand = p2->hand;
+      currentTile = hand->tiles[tileIndex];
 
       if (ch == ENTER){
           currentTile->selected = !currentTile->selected;
@@ -138,59 +172,35 @@ int main(int argc, char* argv[]){
 
         if (ch == KEY_UP && tileIndex > 0){
 
-          int i = tileIndex;
-          while (i > 0){
-
-            if (p1->hand->tiles[i - 1]->location == 1){
-              currentTile->selected = 0;
-              p1->hand->tiles[i - 1]->selected = 1;
-              tileIndex = i - 1;
-              break;
-            }
-            i--;
-
-          }
+          currentTile->selected = 0;
+          tileIndex = hand_get_last_tile(hand, tileIndex - 1);
+          hand->tiles[tileIndex]->selected = 1;
 
         }
-        else if (ch == KEY_DOWN && tileIndex < p1->hand->numTiles - 1){
+        else if (ch == KEY_DOWN && tileIndex < hand->numTiles - 1){
 
-          int i = tileIndex;
-          while (i < 6){
-
-            if (p1->hand->tiles[i + 1]->location == 1){
-              currentTile->selected = 0;
-              p1->hand->tiles[i + 1]->selected = 1;
-              tileIndex = i + 1;
-              break;
-            }
-            i++;
-
-          }
+          currentTile->selected = 0;
+          tileIndex = hand_get_next_tile(hand, tileIndex + 1);
+          hand->tiles[tileIndex]->selected = 1;
 
         }
-        else if (ch == KEY_RIGHT){
+        else if ((ch == KEY_RIGHT && location == player1) || (ch == KEY_LEFT && location == player2)){
           currentTile->selected = 0;
           currentCell->selected = 1;
-          location = GAMEBOARD;
+          location = board;
         }
 
       }
       else if (currentTile->chosen == 1){
 
-        if (ch == KEY_RIGHT){
+        if ((ch == KEY_LEFT && location == player2) || (ch == KEY_RIGHT && location == player1)){
 
           currentCell->selected = 1;
           currentCell->temp = currentTile;
-          currentTile->location = 0;
-          hand_erase(p1->hand);
-          location = GAMEBOARD;
-
-          for (int i = 0; i < 7; i++){
-            if (p1->hand->tiles[tileIndex]->location == 0)
-              tileIndex++;
-            if (tileIndex == 7)
-              tileIndex = 0;
-          }
+          currentTile->location = board;
+          location = board;
+          player_erase(p1);
+          player_erase(p2);
 
         }
 
@@ -199,7 +209,16 @@ int main(int argc, char* argv[]){
     }
 
     board_draw(gameboard);
-    hand_draw(p1->hand);
+
+    if (turn == player1)
+      player_draw(p1, 1);
+    else
+      player_draw(p1, 0);
+
+    if (turn == player2)
+      player_draw(p2, 1);
+    else
+      player_draw(p2, 0);
 
   }
 

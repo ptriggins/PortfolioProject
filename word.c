@@ -33,14 +33,16 @@ void word_cancel(WORD* self){
 
 }
 
-void word_set(WORD* self){
+void word_set(WORD* self, HAND* hand, TILEBAG* tilebag){
 
   CELL* cell = self->head;
   if (self->direction == VERTICAL){
     while(cell->tile != NULL){
 
-      if (cell->played != 1)
+      if (cell->played != 1){
         cell_play_tile(cell);
+        hand_remove_tile(hand, cell->tile, tilebag);
+      }
       cell = cell->below;
 
     }
@@ -48,8 +50,10 @@ void word_set(WORD* self){
   else if(self->direction == HORIZONTAL){
     while(cell->tile != NULL){
 
-      if (cell->played != 1)
+      if (cell->played != 1){
         cell_play_tile(cell);
+        hand_remove_tile(hand, cell->tile, tilebag);
+      }
       cell = cell->right;
 
     }

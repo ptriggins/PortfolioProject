@@ -5,6 +5,9 @@
 #include <ncurses.h>
 #include "tile.h"
 
+#ifndef TILEBAG_H
+#define TILEBAG_H
+
 typedef struct TILEBAG{
 
   int numTiles;
@@ -15,3 +18,5 @@ typedef struct TILEBAG{
 void bag_init(TILEBAG* self, char* settingsFile);
 TILEBAG* bag_create(char* settingsFile);
 TILE* bag_draw_tile(TILEBAG* self);
+
+#endif

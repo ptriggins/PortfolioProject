@@ -27,9 +27,15 @@ void tile_draw(WINDOW* win, int y, int x, TILE* self){
 
 }
 
+void tile_select(TILE* self){
+
+
+}
+
 void tile_deselect(TILE* self){
   self->chosen = 0;
-  self->location = 1;
+  self->location = 0;
+  self->selected = 0;
 }
 
 void draw_background(WINDOW* win, int y, int x){
