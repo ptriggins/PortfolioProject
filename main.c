@@ -42,8 +42,8 @@ int main(int argc, char* argv[]){
   TILEBAG* tilebag = bag_create("alphabet.txt");
   NODE* dictionary = dictionary_create("dictionary.txt", 276643);
 
-  PLAYER* p1 = player_create(gameboard->startRow, gameboard->startCol - MARGIN_WIDTH, tilebag);
-  PLAYER* p2 = player_create(gameboard->startRow, gameboard->startCol + (viewframe->rightCol - viewframe->leftCol + 1), tilebag);
+  PLAYER* p1 = player_create(gameboard->startRow, gameboard->startCol - MARGIN_WIDTH, tilebag, "P1\0");
+  PLAYER* p2 = player_create(gameboard->startRow, gameboard->startCol + (viewframe->rightCol - viewframe->leftCol + 1), tilebag, "P2\0");
 
   HAND* hand = p1->hand;
 

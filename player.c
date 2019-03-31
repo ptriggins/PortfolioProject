@@ -2,7 +2,7 @@
 
 void player_init(PLAYER* self, int startRow, int startCol, TILEBAG* tilebag, CHAR* name){
 
-  self->name = name;
+  strcpy(self->name, name);
   self->score = 0;
   self->hand = hand_create(startRow, startCol, tilebag);
   self->window = newwin(16 * TILE_HEIGHT, 3 * TILE_WIDTH, startRow * TILE_HEIGHT, startCol * TILE_WIDTH);
