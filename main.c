@@ -63,8 +63,6 @@ int main(int argc, char* argv[]){
   WORD* word = word_create();
   int wordScore = 0;
 
-  printw("%d", p2->hand->numTiles);
-
   while (1){
 
     int ch = getch();
@@ -80,7 +78,7 @@ int main(int argc, char* argv[]){
         else if (word->head != NULL){
 
           wordScore = move_check(word, dictionary);
-          if (word > 0){
+          if (wordScore > 0){
 
             if (turn == player1)
               p1->score += wordScore;
@@ -101,6 +99,7 @@ int main(int argc, char* argv[]){
         word_cancel(word);
         word = word_create();
         cell_clear_tiles(currentCell);
+        currentCell->selected = 1;
       }
       else if (ch == KEY_UP && row > 0){
 
@@ -122,6 +121,7 @@ int main(int argc, char* argv[]){
 
         if (col == 0 && p1->hand->numTiles > 0 && turn == player1){
           currentCell->selected = 0;
+          cell_clear_tiles(currentCell);
           tileIndex = hand_get_next_tile(p1->hand, 0);
           p1->hand->tiles[tileIndex]->selected = 1;
           location = player1;
@@ -140,6 +140,7 @@ int main(int argc, char* argv[]){
 
         if (col == numCols - 1 && p2->hand->numTiles > 0 && turn == player2){
           currentCell->selected = 0;
+          cell_clear_tiles(currentCell);
           tileIndex = hand_get_next_tile(p2->hand, 0);
           p2->hand->tiles[tileIndex]->selected = 1;
           location = player2;

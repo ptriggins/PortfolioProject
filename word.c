@@ -12,6 +12,7 @@ WORD* word_create(){
 void word_cancel(WORD* self){
 
   CELL* cell = self->head;
+  cell_clear_tiles(cell);
   if (self->direction == VERTICAL){
     while(cell->tile != NULL){
 
@@ -30,12 +31,15 @@ void word_cancel(WORD* self){
 
     }
   }
+  self->head->selected = 1;
 
 }
 
 void word_set(WORD* self, HAND* hand, TILEBAG* tilebag){
 
   CELL* cell = self->head;
+  cell_play_tile(cell);
+  hand_remove_tile(hand, cell->tile, tilebag);
   if (self->direction == VERTICAL){
     while(cell->tile != NULL){
 
@@ -69,7 +73,7 @@ int move_check(WORD* word, NODE* dictionary){
   while (head != NULL){
 
     newHead = head;
-    if (word->direction ==VERTICAL){
+    if (word->direction == VERTICAL){
 
       if (head->left->tile != NULL){
 
@@ -83,7 +87,7 @@ int move_check(WORD* word, NODE* dictionary){
       }
       else if (head->right->tile!= NULL){
 
-        wordScore = (word_check(head, dictionary, HORIZONTAL));
+        wordScore = word_check(head, dictionary, HORIZONTAL);
         if (wordScore == 0)
           return 0;
 
@@ -115,10 +119,61 @@ int move_check(WORD* word, NODE* dictionary){
       head = head->right;
 
     }
+    if (word->direction == NONE){
+
+      if (head->above->tile != NULL){
+
+        printw("1t\n");
+        while (newHead->above->tile != NULL){
+          newHead = newHead->above;
+        }
+        wordScore = word_check(newHead, dictionary, VERTICAL);
+        if (wordScore == 0)
+          return 0;
+        score += wordScore;
+
+      }
+      else if (head->below->tile!= NULL){
+
+        printw("2t\n");
+        wordScore = word_check(head, dictionary, VERTICAL);
+        if (wordScore == 0)
+          return 0;
+        score += wordScore;
+
+      }
+      newHead = head;
+      if (head->left->tile != NULL){
+
+
+        printf("3t\n");
+        while (newHead->left->tile != NULL){
+          newHead = newHead->left;
+        }
+        wordScore = word_check(newHead, dictionary, HORIZONTAL);
+        if (wordScore == 0)
+          return 0;
+        score += wordScore;
+
+      }
+      else if (head->right->tile!= NULL){
+
+        printf("4t\n");
+        wordScore = (word_check(head, dictionary, HORIZONTAL));
+        if (wordScore == 0)
+          return 0;
+        score += wordScore;
+
+      }
+      break;
+
+    }
 
   }
 
-  wordScore = word_check(word->head, dictionary, word->direction);
+  if (word->direction != NONE)
+    wordScore = word_check(word->head, dictionary, word->direction);
+
   if (wordScore == 0)
     return 0;
   return score + wordScore;
@@ -167,6 +222,12 @@ int word_check(CELL* head, NODE* dictionary, int direction){
     }
 
   }
+  else{
+    word[0] = cell->tile->letter;
+    i++;
+  }
+
+  word[i] = '\0';
   score *= x;
 
   if (dictionary_search(word, dictionary) == 1){

@@ -1,6 +1,6 @@
 #include "player.h"
 
-void player_init(PLAYER* self, int startRow, int startCol, TILEBAG* tilebag, CHAR* name){
+void player_init(PLAYER* self, int startRow, int startCol, TILEBAG* tilebag, char name[3]){
 
   strcpy(self->name, name);
   self->score = 0;
@@ -9,7 +9,7 @@ void player_init(PLAYER* self, int startRow, int startCol, TILEBAG* tilebag, CHA
 
 }
 
-PLAYER* player_create(int startRow, int startCol, TILEBAG* tilebag, CHAR* name){
+PLAYER* player_create(int startRow, int startCol, TILEBAG* tilebag, char name[3]){
 
   PLAYER* newPlayer = (PLAYER*) malloc(sizeof(PLAYER));
   player_init(newPlayer, startRow, startCol, tilebag, name);
@@ -38,8 +38,8 @@ void player_draw(PLAYER* self, int turn){
   mvwaddch(self->window, 15 * TILE_HEIGHT - 1, 0, ACS_LLCORNER);
   mvwaddch(self->window, 15 * TILE_HEIGHT - 1, 3 * TILE_WIDTH - 1, ACS_LRCORNER);
 
+  mvwprintw(self->window, 0, 1, " %s:%d ", self->name, self->score);
   hand_draw(self->hand, self->window);
-  mvprintw(self->window, 0, 1, "")
   wrefresh(self->window);
 
 }

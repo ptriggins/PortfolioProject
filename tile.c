@@ -27,11 +27,6 @@ void tile_draw(WINDOW* win, int y, int x, TILE* self){
 
 }
 
-void tile_select(TILE* self){
-
-
-}
-
 void tile_deselect(TILE* self){
   self->chosen = 0;
   self->location = 0;

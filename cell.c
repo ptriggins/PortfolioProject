@@ -121,6 +121,6 @@ void cell_clear_tiles(CELL* self){
     tile_deselect(self->tile);
   self->temp = NULL;
   self->tile = NULL;
-  self->selected = 1;
+  self->selected = 0;
 
 }
