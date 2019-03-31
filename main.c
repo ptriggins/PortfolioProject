@@ -55,21 +55,45 @@ int main(int argc, char* argv[]){
   player_draw(p2, 0);
 
   int row = viewframe->centerRow, col = viewframe->centerCol;
-  CELL* currentCell;
+  CELL *startCell = gameboard->cells[row][col], *currentCell;
 
   int tileIndex = 0;
   TILE* currentTile = p1->hand->tiles[tileIndex];
 
   WORD* word = word_create();
   int wordScore = 0;
+  int isHuman = 0;
 
   while (1){
+
+    if (turn == player2 && isHuman == 0){
+
+      word->head = startCell;
+      wordScore = get_next_move(word, p2->hand, dictionary, tilebag);
+      turn = player1;
+      word = word_create();
+
+      /*
+      if (wordScore > 0){
+        word_set(word, p2->hand, tilebag);
+        board_draw(gameboard);
+      }
+      else
+        mvprintw(0, 0, "No Words Found");
+      p2->score += wordScore;
+      turn = player1;
+      player_draw(p2, 0);
+      player_draw(p1, 1);
+      word = word_create();
+      */
+    }
 
     int ch = getch();
 
     if (location == board){
 
       currentCell = gameboard->cells[row][col];
+
       if (ch == ENTER){
 
         if (currentCell->temp != NULL){
@@ -77,8 +101,12 @@ int main(int argc, char* argv[]){
         }
         else if (word->head != NULL){
 
-          wordScore = move_check(word, dictionary);
-          if (wordScore > 0){
+          if (p1->score == 0)
+            wordScore = move_check(word, dictionary, 1);
+          else
+            wordScore = move_check(word, dictionary, 0);
+
+          if (wordScore > 0 && startCell->tile != NULL){
 
             if (turn == player1)
               p1->score += wordScore;
@@ -88,8 +116,15 @@ int main(int argc, char* argv[]){
             word_set(word, hand, tilebag);
 
           }
-          else
+          else if (wordScore > 0 && startCell->tile == NULL){
+            mvprintw(0, 0, "Invalid Move: Start Cell Uncovered");
             word_cancel(word);
+            currentCell->selected = 1;
+          }
+          else{
+            word_cancel(word);
+            currentCell->selected = 1;
+          }
           word = word_create();
 
         }
@@ -98,7 +133,7 @@ int main(int argc, char* argv[]){
       else if (ch == ESCAPE){
         word_cancel(word);
         word = word_create();
-        cell_clear_tiles(currentCell);
+        cell_clear_tile(currentCell, currentCell->temp);
         currentCell->selected = 1;
       }
       else if (ch == KEY_UP && row > 0){
@@ -121,7 +156,7 @@ int main(int argc, char* argv[]){
 
         if (col == 0 && p1->hand->numTiles > 0 && turn == player1){
           currentCell->selected = 0;
-          cell_clear_tiles(currentCell);
+          cell_clear_tile(currentCell, currentCell->temp);
           tileIndex = hand_get_next_tile(p1->hand, 0);
           p1->hand->tiles[tileIndex]->selected = 1;
           location = player1;
@@ -131,6 +166,7 @@ int main(int argc, char* argv[]){
           board_switch_cells(currentCell, currentCell->left);
           if (col == viewframe->centerCol && viewframe->leftCol > 0)
             frame_move_left(viewframe);
+
           col--;
 
         }
@@ -140,7 +176,7 @@ int main(int argc, char* argv[]){
 
         if (col == numCols - 1 && p2->hand->numTiles > 0 && turn == player2){
           currentCell->selected = 0;
-          cell_clear_tiles(currentCell);
+          cell_clear_tile(currentCell, currentCell->temp);
           tileIndex = hand_get_next_tile(p2->hand, 0);
           p2->hand->tiles[tileIndex]->selected = 1;
           location = player2;

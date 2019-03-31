@@ -23,7 +23,7 @@ typedef struct WORD{
 WORD* word_create();
 void word_cancel(WORD* self);
 void word_set(WORD* self, HAND* hand, TILEBAG* tilebag);
-int move_check(WORD* word, NODE* dictionary);
+int move_check(WORD* word, NODE* dictionary, int first);
 int word_check(CELL* head, NODE* dictionary, int direction);
 
 #endif

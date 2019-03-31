@@ -34,17 +34,29 @@ void board_init(BOARD* self, int numRows, int numCols, int availableRows, int av
     }
   }
 
+  CELL* dummy = cell_create("DM");
   for (int i = 0; i < numRows; i++) {
     for (int j = 0; j < numCols; j++) {
 
       if (i != 0)
         self->cells[i][j]->above = self->cells[i - 1][j];
+      else
+        self->cells[i][j]->above = dummy;
+
       if (i != numRows - 1)
         self->cells[i][j]->below = self->cells[i + 1][j];
+      else
+        self->cells[i][j]->below = dummy;
+
       if (j != 0)
         self->cells[i][j]->left = self->cells[i][j - 1];
+      else
+        self->cells[i][j]->left = dummy;
+
       if (j != numCols - 1)
         self->cells[i][j]->right = self->cells[i][j + 1];
+      else
+        self->cells[i][j]->right = dummy;
 
     }
   }

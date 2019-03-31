@@ -34,6 +34,6 @@ void cell_place_tile(CELL* self);
 void cell_play_tile(CELL* self);
 void cell_switch_selection(CELL* oldCell, CELL* newCell);
 void cell_switch_tile(CELL* oldCell, CELL* newCell);
-void cell_clear_tiles(CELL* self);
+void cell_clear_tile(CELL* self, TILE* tile);
 
 #endif

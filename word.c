@@ -12,12 +12,14 @@ WORD* word_create(){
 void word_cancel(WORD* self){
 
   CELL* cell = self->head;
-  cell_clear_tiles(cell);
+  if (cell == NULL)
+    return;
+
   if (self->direction == VERTICAL){
     while(cell->tile != NULL){
 
       if (cell->played != 1)
-        cell_clear_tiles(cell);
+        cell_clear_tile(cell, cell->tile);
       cell = cell->below;
 
     }
@@ -26,20 +28,20 @@ void word_cancel(WORD* self){
     while(cell->tile != NULL){
 
       if (cell->played != 1)
-        cell_clear_tiles(cell);
+        cell_clear_tile(cell, cell->tile);
       cell = cell->right;
 
     }
   }
-  self->head->selected = 1;
+  else if (self->direction == NONE){
+    cell_clear_tile(cell, cell->tile);
+  }
 
 }
 
 void word_set(WORD* self, HAND* hand, TILEBAG* tilebag){
 
   CELL* cell = self->head;
-  cell_play_tile(cell);
-  hand_remove_tile(hand, cell->tile, tilebag);
   if (self->direction == VERTICAL){
     while(cell->tile != NULL){
 
@@ -62,60 +64,74 @@ void word_set(WORD* self, HAND* hand, TILEBAG* tilebag){
 
     }
   }
+  else if (self->direction == NONE){
+    cell_play_tile(cell);
+    hand_remove_tile(hand, cell->tile, tilebag);
+  }
 
 }
 
-int move_check(WORD* word, NODE* dictionary){
+int move_check(WORD* word, NODE* dictionary, int first){
 
-  int score = 0, wordScore = 0;
+  int score = 0, wordScore = 0, adjacent = first;
+
   CELL *head = word->head, *newHead = head;
-
-  while (head != NULL){
+  while (head->tile != NULL){
 
     newHead = head;
     if (word->direction == VERTICAL){
 
-      if (head->left->tile != NULL){
+      if (head->left->tile != NULL && head->played == 0){
 
+        adjacent = 1;
         while (newHead->left->tile != NULL){
           newHead = newHead->left;
         }
         wordScore = word_check(newHead, dictionary, HORIZONTAL);
         if (wordScore == 0)
           return 0;
+        score += wordScore;
 
       }
-      else if (head->right->tile!= NULL){
+      else if (head->right->tile != NULL && head->played == 0){
 
+        adjacent = 1;
         wordScore = word_check(head, dictionary, HORIZONTAL);
         if (wordScore == 0)
           return 0;
+        score += wordScore;
 
       }
-      score += wordScore;
+      else if (head->played == 1)
+        adjacent = 1;
       head = head->below;
 
     }
     if (word->direction == HORIZONTAL){
 
-      if (head->above->tile != NULL){
+      if (head->above->tile != NULL && head->played == 0){
 
+        adjacent = 1;
         while (newHead->above->tile != NULL){
           newHead = newHead->above;
         }
         wordScore = word_check(newHead, dictionary, VERTICAL);
         if (wordScore == 0)
           return 0;
+        score += wordScore;
 
       }
-      else if (head->below->tile!= NULL){
+      else if (head->below->tile!= NULL && head->played == 0){
 
+        adjacent = 1;
         wordScore = word_check(head, dictionary, VERTICAL);
         if (wordScore == 0)
           return 0;
+        score += wordScore;
 
       }
-      score += wordScore;
+      else if (head->played == 1)
+        adjacent = 1;
       head = head->right;
 
     }
@@ -123,7 +139,7 @@ int move_check(WORD* word, NODE* dictionary){
 
       if (head->above->tile != NULL){
 
-        printw("1t\n");
+        adjacent = 1;
         while (newHead->above->tile != NULL){
           newHead = newHead->above;
         }
@@ -135,7 +151,7 @@ int move_check(WORD* word, NODE* dictionary){
       }
       else if (head->below->tile!= NULL){
 
-        printw("2t\n");
+        adjacent = 1;
         wordScore = word_check(head, dictionary, VERTICAL);
         if (wordScore == 0)
           return 0;
@@ -145,8 +161,7 @@ int move_check(WORD* word, NODE* dictionary){
       newHead = head;
       if (head->left->tile != NULL){
 
-
-        printf("3t\n");
+        adjacent = 1;
         while (newHead->left->tile != NULL){
           newHead = newHead->left;
         }
@@ -158,7 +173,7 @@ int move_check(WORD* word, NODE* dictionary){
       }
       else if (head->right->tile!= NULL){
 
-        printf("4t\n");
+        adjacent = 1;
         wordScore = (word_check(head, dictionary, HORIZONTAL));
         if (wordScore == 0)
           return 0;
@@ -171,11 +186,28 @@ int move_check(WORD* word, NODE* dictionary){
 
   }
 
-  if (word->direction != NONE)
-    wordScore = word_check(word->head, dictionary, word->direction);
+  head = word->head;
+  if (word->direction == VERTICAL){
+    while(head->above->tile != NULL){
+      adjacent = 1;
+      head = head->above;
+    }
+    wordScore = word_check(head, dictionary, VERTICAL);
+  }
+  else if (word->direction == HORIZONTAL){
+    while (head->left->tile != NULL){
+      adjacent = 1;
+      head = head->left;
+    }
+    wordScore = word_check(head, dictionary, HORIZONTAL);
+  }
 
   if (wordScore == 0)
     return 0;
+  if (adjacent == 0){
+    mvprintw(0, 0, "Invalid Move: Not Adjacent to Played Words");
+    return 0;
+  }
   return score + wordScore;
 
 }
@@ -231,10 +263,10 @@ int word_check(CELL* head, NODE* dictionary, int direction){
   score *= x;
 
   if (dictionary_search(word, dictionary) == 1){
-    printw("Valid Word: %s + %d\n", word, score);
+    mvprintw(0, 0, "Valid Word: %s  (%d)\n", word, score);
     return score;
   }
-  printw("Invalid Word: %s\n", word);
+  mvprintw(0, 0, "Invalid Word: (%s)\n", word);
   return 0;
 
 }

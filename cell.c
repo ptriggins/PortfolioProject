@@ -36,6 +36,11 @@ void cell_init(CELL* self, char type[3]){
     self->wordScore = 3;
     self->color = RED;
   }
+  else if (strcmp(type, "DM") == 0){
+    self->letterScore = 0;
+    self->wordScore = 0;
+    self->color = 8;
+  }
 
   self->temp = NULL, self->tile = NULL;
   self->above = NULL, self->below = NULL, self->left = NULL, self->right = NULL;
@@ -113,14 +118,18 @@ void cell_switch_tile(CELL* oldCell, CELL* newCell){
   oldCell->temp = NULL;
 }
 
-void cell_clear_tiles(CELL* self){
+void cell_clear_tile(CELL* self, TILE* tile){
 
-  if (self->temp != NULL)
-    tile_deselect(self->temp);
-  if (self->tile != NULL)
-    tile_deselect(self->tile);
-  self->temp = NULL;
-  self->tile = NULL;
+  if(tile != NULL){
+    if (tile == self->temp){
+      tile_deselect(self->temp);
+      self->temp = NULL;
+    }
+    else if (tile == self->tile && tile){
+      tile_deselect(self->tile);
+      self->tile = NULL;
+    }
+  }
   self->selected = 0;
 
 }
