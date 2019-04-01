@@ -160,6 +160,7 @@ void check_valid_tile_placement(WORD* word, CELL* current){
     }
 
   }
+  mvprintw(4, 0, "%c", word->head->tile->letter);
   current->tile = NULL;
   printw("Invalid Tile Placement");
 
@@ -167,10 +168,10 @@ void check_valid_tile_placement(WORD* word, CELL* current){
 
 int check_permutation(WORD* move, HAND* hand, NODE* dictionary, TILEBAG* tilebag){
 
-  CELL *cell = move->head, *start = move ->head;
+  CELL *cell = move->head, *start = move->head;
   int score = 0;
 
-  if (cell->right->tile == NULL && start->right->right->tile == NULL){
+  if (start->left->tile == NULL && start->right->tile == NULL && start->right->right->tile == NULL){
 
     int i = 0;
     char word[hand->numTiles + 2];
@@ -180,13 +181,11 @@ int check_permutation(WORD* move, HAND* hand, NODE* dictionary, TILEBAG* tilebag
     cell = start->right;
     move->direction = HORIZONTAL;
 
-    while(cell->right->tile == NULL && cell->right->letterScore != 0 && i <= hand->numTiles){
+    while(cell->right->tile == NULL && cell->right->letterScore != 0 && i < hand->numTiles){
 
-      mvprintw(2, 0, "%d", i);
       cell->tile = hand->tiles[i];
       word[i + 1] = hand->tiles[i]->letter;
       word[i + 2] = '\0';
-      mvprintw(1, 0, "%s", word);
 
       if (dictionary_search(word, dictionary) == 1){
         move->head = start->right;
@@ -204,11 +203,7 @@ int check_permutation(WORD* move, HAND* hand, NODE* dictionary, TILEBAG* tilebag
     }
 
   }
-  /*
-  printf("1\n");
-  fprintf(help, "1\n");
-  fclose(help);
-  if (start->left->left->tile == NULL){
+  if (start->left->tile == NULL && start->right->tile == NULL && start->left->left->tile == NULL){
 
     int i = 0;
     char word[hand->numTiles + 2], newWord[hand->numTiles+2];
@@ -240,12 +235,8 @@ int check_permutation(WORD* move, HAND* hand, NODE* dictionary, TILEBAG* tilebag
     }
 
   }
-  printf("2\n");
-  fprintf(help, "2\n");
-  fclose(help);
-  if (start->below->below->tile == NULL){
-
-    //printf("2\n");
+  /*
+  if (start->below->tile == NULL && start->below->below->tile == NULL && start->above->tile == NULL){
 
     int i = 0;
     char word[hand->numTiles + 2];
@@ -268,6 +259,7 @@ int check_permutation(WORD* move, HAND* hand, NODE* dictionary, TILEBAG* tilebag
           return score;
 
       }
+      cell = cell->below;
       i++;
 
     }
@@ -277,10 +269,7 @@ int check_permutation(WORD* move, HAND* hand, NODE* dictionary, TILEBAG* tilebag
     }
 
   }
-  printf("3\n");
-  fprintf(help, "3\n");
-  fclose(help);
-  if (start->above->above->tile == NULL ){
+  if (start->above->tile == NULL && start->below->tile == NULL && start->above->above->tile == NULL ){
 
     int i = 0;
     char word[hand->numTiles + 2], newWord[hand->numTiles+2];
@@ -312,9 +301,6 @@ int check_permutation(WORD* move, HAND* hand, NODE* dictionary, TILEBAG* tilebag
     }
 
   }
-  printf("4\n");
-  fprintf(help, "4\n");
-  fclose(help);
   */
   return 0;
 
@@ -359,8 +345,7 @@ int hand_permute(WORD* move, HAND* hand, int size, int n, NODE* dictionary, TILE
 
 int get_next_move(WORD* word, HAND* hand, NODE* dictionary, TILEBAG* tilebag){
 
-  int score = check_permutation(word, hand, /*p2->hand->numTiles, p2->hand->numTiles,*/ dictionary, tilebag);
-  printf("test\n");
+  int score = check_permutation(word, hand, dictionary, tilebag);
   if (score == 0){
     if (word->head->above->played == 1){
       word->head = word->head->above;
