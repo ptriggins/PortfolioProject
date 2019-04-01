@@ -205,7 +205,7 @@ int move_check(WORD* word, NODE* dictionary, int first){
   if (wordScore == 0)
     return 0;
   if (adjacent == 0){
-    mvprintw(0, 0, "Invalid Move: Not Adjacent to Played Words");
+    mvprintw(0, 0, "Invalid Move: Not Adjacent to Played Words            ");
     return 0;
   }
   return score + wordScore;
@@ -263,10 +263,10 @@ int word_check(CELL* head, NODE* dictionary, int direction){
   score *= x;
 
   if (dictionary_search(word, dictionary) == 1){
-    mvprintw(0, 0, "Valid Word: %s  (%d)\n", word, score);
+    mvprintw(0, 0, "Valid Word: %s  (%d)        ", word, score);
     return score;
   }
-  mvprintw(0, 0, "Invalid Word: (%s)\n", word);
+  mvprintw(0, 0, "Invalid Word: (%s)           ", word);
   return 0;
 
 }

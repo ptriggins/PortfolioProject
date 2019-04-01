@@ -1,7 +1,10 @@
 #include "board.h"
 
+
+// Initializes a board of a customizable size
 void board_init(BOARD* self, int numRows, int numCols, int availableRows, int availableCols){
 
+  // Determines the top left coordinates of where the board will be drawn on the screen
   if (numRows <= availableRows)
     self->startRow = ((availableRows / 2) - (numRows / 2));
   else
@@ -21,6 +24,7 @@ void board_init(BOARD* self, int numRows, int numCols, int availableRows, int av
   int topY = -numRows / 2;
   int topX = -numCols / 2;
 
+  // Initializes each cell based on its coordinates
   for(int i = topY; i < topY + numRows; i++){
     for(int j = topX; j < topX + numCols; j++){
 
@@ -34,6 +38,8 @@ void board_init(BOARD* self, int numRows, int numCols, int availableRows, int av
     }
   }
 
+
+  // Sets adjacent tiles for each tile in the graph
   CELL* dummy = cell_create("DM");
   for (int i = 0; i < numRows; i++) {
     for (int j = 0; j < numCols; j++) {
@@ -61,15 +67,19 @@ void board_init(BOARD* self, int numRows, int numCols, int availableRows, int av
     }
   }
 
+  // Creates the portion of the gameboard that is viewable at a given time and the window that it will be drawn to
   self->viewframe = frame_create(numRows, numCols, availableRows, availableCols);
   self->window = newwin(availableRows * CELL_HEIGHT, availableCols * CELL_WIDTH, self->startRow * CELL_HEIGHT, self->startCol * CELL_WIDTH);
 
 }
 
+
+// Allocates memory for a board of a given size
 BOARD* board_create(int numRows, int numCols, int availableRows, int availableCols){
 
   BOARD* newBoard = (BOARD*) malloc(sizeof(BOARD));
 
+  // ALlocates memory for the board's array of cells
   newBoard->cells = (CELL***) malloc(numRows * sizeof(CELL**));
   for (int i = 0; i < numRows; i++){
     newBoard->cells[i] = (CELL**) malloc(numCols * sizeof(CELL*));
@@ -80,6 +90,8 @@ BOARD* board_create(int numRows, int numCols, int availableRows, int availableCo
 
 }
 
+
+// Draws the gameboard to the screen
 void board_draw(BOARD* self){
 
   int y = 0, x = 0;
@@ -101,6 +113,7 @@ void board_draw(BOARD* self){
 
 }
 
+// Switches which cell the cursor is currently over
 void board_switch_cells(CELL* currentCell, CELL* nextCell){
 
   cell_switch_selection(currentCell, nextCell);

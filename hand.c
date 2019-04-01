@@ -1,5 +1,6 @@
 #include "hand.h"
 
+// Initializes a hand and draws 7 tiles from the bag
 void hand_init(HAND* self, int startRow, int startCol, TILEBAG* tilebag){
 
   self->side = LEFT;
@@ -11,6 +12,7 @@ void hand_init(HAND* self, int startRow, int startCol, TILEBAG* tilebag){
 
 }
 
+// Allocates memory for a hand object
 HAND* hand_create(int startRow, int startCol, TILEBAG* tilebag){
 
   HAND* newHand = (HAND*) malloc(sizeof(HAND));
@@ -43,6 +45,8 @@ void hand_remove_tile(HAND* self, TILE* tile, TILEBAG* tilebag){
 
 }
 
+
+// Determiens which tile currently in the deck area should be selected next
 int hand_get_next_tile(HAND* self, int start){
 
   for (int i = start; i < self->numTiles; i++){

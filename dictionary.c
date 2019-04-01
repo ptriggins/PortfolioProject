@@ -1,5 +1,6 @@
 #include "dictionary.h"
 
+// A structure representing a node in a binary search tree
 NODE* node_create(char word[20]){
 
   NODE* newNode = (NODE*) malloc(sizeof(NODE));
@@ -10,6 +11,7 @@ NODE* node_create(char word[20]){
 
 }
 
+// Creates a balanced binary search tree from an array of sorted words
 NODE* tree_create(char** words, int start, int end){
 
   if (start > end) return NULL;
@@ -24,6 +26,7 @@ NODE* tree_create(char** words, int start, int end){
 
 }
 
+// creates "dictionary", or the node of the binary search tree that can be used to search all other words
 NODE* dictionary_create(char* dictionaryFile, int numWords){
 
   FILE* wordFile = fopen(dictionaryFile, "r");
@@ -43,6 +46,7 @@ NODE* dictionary_create(char* dictionaryFile, int numWords){
 
 }
 
+// searches the dictionary for a given word
 int dictionary_search(char* word, NODE* dictionary){
 
   if (dictionary == NULL)

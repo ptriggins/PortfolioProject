@@ -1,5 +1,7 @@
 #include "cell.h"
 
+
+// Gives a cell predefined attributes based on a given type
 void cell_init(CELL* self, char type[3]){
 
   self->selected = 0, self->played = 0;
@@ -47,6 +49,7 @@ void cell_init(CELL* self, char type[3]){
 
 }
 
+// Allocates memory for a given cell
 CELL* cell_create(char type[3]){
 
   CELL* newCell = (CELL*) malloc(sizeof(CELL));
@@ -55,6 +58,7 @@ CELL* cell_create(char type[3]){
 
 }
 
+// Determines a cell's type based on distance from the start cell
 void cell_get_type(char type[3], int yDistance, int xDistance){
 
   if (yDistance == 0 && xDistance == 0)
@@ -74,6 +78,8 @@ void cell_get_type(char type[3], int yDistance, int xDistance){
 
 }
 
+
+// Draws a cell to the screen
 void cell_draw(WINDOW* win, int y, int x, CELL* self){
 
   if (self->tile != NULL)

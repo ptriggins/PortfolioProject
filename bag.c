@@ -1,5 +1,6 @@
 #include "bag.h"
 
+// Initializes a bag of tiles using a predetermined set of frequencies and scores for each letter in the alphabet
 void bag_init(TILEBAG* self, char* settingsFile){
 
   self->numTiles = 0;
@@ -21,6 +22,7 @@ void bag_init(TILEBAG* self, char* settingsFile){
 
 }
 
+// Allocates memory for a tilebag object
 TILEBAG* bag_create(char* settingsFile){
 
   TILEBAG* newBag = (TILEBAG*) malloc(sizeof(TILEBAG));
@@ -29,6 +31,7 @@ TILEBAG* bag_create(char* settingsFile){
 
 }
 
+// Draws a tilebag object
 TILE* bag_draw_tile(TILEBAG* self){
 
   srand(time(0));

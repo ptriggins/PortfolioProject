@@ -19,8 +19,10 @@ int main(){
   int numRows = -1, numCols = -1;
   char newGame, gametype;
   printf("\nWelcome to scrabble!");
+
   while (1){
 
+    // Gathers input needed in initializing the gameboard
     printf("\n\nEnter the number of rows you would like your gameboard to have (min 2)\n>");
     scanf("%d", &numRows);
     printf("\n\nEnter the number of columns you would like your gameboard to have (min 2)\n>");
@@ -35,9 +37,10 @@ int main(){
 
     if (numRows >= 2 && numCols >= 2 && isHuman != -1){
 
+      // Initializes ncurses settings needed for the game
       initscr();
       start_color();
-      //noecho();
+      noecho();
 
       init_pair(1, COLOR_WHITE, COLOR_YELLOW);
       init_pair(2, COLOR_WHITE, COLOR_MAGENTA);
@@ -56,28 +59,31 @@ int main(){
 
       refresh();
 
+      // Determines how many rows and columns are available in the current screen
       int screenRows = LINES / CELL_HEIGHT, screenCols = COLS / CELL_WIDTH;
 
+      // Declares objects used in rendering the game
       BOARD* gameboard = board_create(numRows, numCols, screenRows, screenCols - (2 * MARGIN_WIDTH));
       FRAME* viewframe = gameboard->viewframe;
       TILEBAG* tilebag = bag_create("alphabet.txt");
       NODE* dictionary = dictionary_create("dictionary.txt", 276643);
-
       PLAYER* p1 = player_create(gameboard->startRow, gameboard->startCol - MARGIN_WIDTH, tilebag, "P1\0");
       PLAYER* p2 = player_create(gameboard->startRow, gameboard->startCol + (viewframe->rightCol - viewframe->leftCol + 1), tilebag, "P2\0");
-
       HAND* hand = p1->hand;
 
       enum locations location = board;
       enum locations turn = player1;
 
+      // Draws board objects
       board_draw(gameboard);
       player_draw(p1, 1);
       player_draw(p2, 0);
 
+      // Gets the current row and column of the selected cell in the gameboard
       int row = viewframe->centerRow, col = viewframe->centerCol;
       CELL *startCell = gameboard->cells[row][col], *currentCell;
 
+      // Sets the index of the first tile to be selected in the hand
       int tileIndex = 0;
       TILE* currentTile = p1->hand->tiles[tileIndex];
 
@@ -88,8 +94,10 @@ int main(){
 
       while (1){
 
+        // Automatically generates a move if playing against a computer
         if (turn == player2 && isHuman == 0){
 
+          // Finds the bottom right most cell in relation to the start cell
           CELL* searchStart = startCell;
           while (searchStart->right->played == 1 || searchStart->below->played == 1){
             if (searchStart->right->played == 1)
@@ -99,22 +107,24 @@ int main(){
           }
           word1->head = searchStart;
 
+          // Attempts to generate a word by searching up and left
           wordScore = get_next_move(word1, p1->hand, dictionary, tilebag);
-          if (wordScore == 0) {
-            mvprintw(4, 0, "No Words Founds");
-          }
           p2->score += wordScore;
           turn = player1;
           word1 = word_create();
 
         }
+        // Event handling for human controlled portion of the game
         else {
 
+          // Gets input from the user
           int ch = getch();
 
+          // Quits the game
           if (ch == KEY_F(1)){
             break;
           }
+          // Handles an enter keypress
           if (location == board){
 
             currentCell = gameboard->cells[row][col];
@@ -289,7 +299,7 @@ int main(){
 
       if (p1->score > p2->score)
         p1wins++;
-      else
+      else if (p2->score > p1->score)
         p2wins++;
 
     }
@@ -298,8 +308,9 @@ int main(){
       break;
     }
 
-  printf("Player 1 wins: %d \nPlayer 2 wins: %d\n\n", p1wins, p2wins);
-  scanf("Play again? (n to quit)\n>%c", &newGame);
+  printf("\nPlayer 1 wins: %d \nPlayer 2 wins: %d\n\n", p1wins, p2wins);
+  printf("Play again? (n to quit)\n>");
+  scanf(" %c", &newGame);
   if (tolower(newGame) == 'n')
     break;
   }

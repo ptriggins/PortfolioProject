@@ -1,5 +1,6 @@
 #include "frame.h"
 
+// Creates a viewframe of a given size
 void frame_init(FRAME* self, int numRows, int numCols, int availableRows, int availableCols){
 
   if (numRows <= availableRows){
@@ -25,6 +26,7 @@ void frame_init(FRAME* self, int numRows, int numCols, int availableRows, int av
 
 }
 
+// Allocates memory for a viewframe of a given size
 FRAME *frame_create(int numRows, int numCols, int availableRows, int availableCols){
 
   FRAME *newFrame = (FRAME*) malloc(sizeof(FRAME));
@@ -32,6 +34,8 @@ FRAME *frame_create(int numRows, int numCols, int availableRows, int availableCo
   return newFrame;
 
 }
+
+// Shifts the viewframe in an indicated direction
 
 void frame_move_up(FRAME*self){
   self->topRow--;
