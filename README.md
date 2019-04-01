@@ -1,6 +1,9 @@
 # PortfolioProject
 Tyler Riggins' Portfolio Project for the CS201 course at the University of Alabama: Scrabble.
 
+INSTRUCTIONS: go to https://bitbucket.org/ptriggins1/cs_201_data_files and download the two files in the downloads section. Include both files in the same folder as the project and enter
+the make command in the terminal. If compiled successfully, run ./a.exe.
+
 Inspiration for object oriented design was taken from https://www.codementor.io/michaelsafyan/object-oriented-programming-in-c-du1081gw2
 Binary Search tree used in implementation of dictionary was modified from the solution found at https://www.geeksforgeeks.org/sorted-array-to-balanced-bst/.
 Dictionary file represents all the words in the collins scrabble dictionary https://www.collinsdictionary.com/scrabble/scrabble-word-finder/
